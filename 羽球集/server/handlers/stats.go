@@ -1,0 +1,122 @@
+package handlers
+
+import (
+	"net/http"
+	"time"
+
+	"yuqiuji-server/config"
+	"yuqiuji-server/models"
+
+	"github.com/gin-gonic/gin"
+)
+
+// GetSummary 统计汇总
+func GetSummary(c *gin.Context) {
+	openid := c.GetString("openid")
+	period := c.DefaultQuery("period", "month")
+
+	start, _ := getDateRange(period)
+	end := time.Now()
+
+	// 1. 账单汇总
+	var totalAmount float64
+	var totalCount int64
+	config.DB.Model(&models.Bill{}).
+		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
+		Select("COALESCE(SUM(amount), 0)").
+		Scan(&totalAmount)
+	config.DB.Model(&models.Bill{}).
+		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
+		Count(&totalCount)
+
+	// 2. 活动汇总
+	var totalDuration float64
+	var activityCount int64
+	var maxDuration int
+	config.DB.Model(&models.Activity{}).
+		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
+		Select("COALESCE(SUM(duration), 0)").
+		Scan(&totalDuration)
+	config.DB.Model(&models.Activity{}).
+		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
+		Count(&activityCount)
+	config.DB.Model(&models.Activity{}).
+		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
+		Select("COALESCE(MAX(duration), 0)").
+		Scan(&maxDuration)
+
+	// 3. 类别拆分
+	var categoryData []models.CategoryBreakdown
+	config.DB.Model(&models.Bill{}).
+		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
+		Select("category, SUM(amount) as amount").
+		Group("category").
+		Scan(&categoryData)
+
+	// 4. 月度趋势（近12个月）
+	var monthlyTrend []models.MonthlyTrend
+	now := time.Now()
+	for i := 11; i >= 0; i-- {
+		m := now.AddDate(0, -i, 0)
+		mStart := time.Date(m.Year(), m.Month(), 1, 0, 0, 0, 0, time.Local)
+		mEnd := mStart.AddDate(0, 1, 0).Add(-time.Second)
+
+		var sum float64
+		config.DB.Model(&models.Bill{}).
+			Where("open_id = ? AND date BETWEEN ? AND ?", openid, mStart, mEnd).
+			Select("COALESCE(SUM(amount), 0)").
+			Scan(&sum)
+
+		monthlyTrend = append(monthlyTrend, models.MonthlyTrend{
+			Month:  mStart.Format("1月"),
+			Amount: sum,
+		})
+	}
+
+	// 5. 球馆排行
+	var topVenues []models.VenueCount
+	config.DB.Model(&models.Activity{}).
+		Where("open_id = ? AND location != '' AND date BETWEEN ? AND ?", openid, start, end).
+		Select("location as name, COUNT(*) as count").
+		Group("location").
+		Order("count DESC").
+		Limit(5).
+		Scan(&topVenues)
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"data": models.StatsSummary{
+			TotalAmount:    totalAmount,
+			TotalCount:     totalCount,
+			TotalDuration:  totalDuration / 60,
+			MaxDuration:    maxDuration,
+			ActivityCount:  activityCount,
+			CategoryData:   categoryData,
+			MonthlyTrend:   monthlyTrend,
+			TopVenues:      topVenues,
+		},
+	})
+}
+
+func getDateRange(period string) (time.Time, time.Time) {
+	now := time.Now()
+	var start time.Time
+
+	switch period {
+	case "week":
+		weekday := now.Weekday()
+		if weekday == 0 {
+			weekday = 7
+		}
+		start = now.AddDate(0, 0, -int(weekday)+1)
+		start = time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, time.Local)
+	case "month":
+		start = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
+	case "year":
+		start = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, time.Local)
+	default:
+		start = time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)
+	}
+
+	return start, now
+}

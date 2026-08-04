@@ -1,0 +1,64 @@
+<!-- pages/bill-add/bill-add.wxml - 记账页面 -->
+<view class="page">
+  <view class="card">
+    <!-- 金额输入 -->
+    <view class="amount-input-section">
+      <text class="currency">¥</text>
+      <input class="amount-input" type="digit" value="{{form.amount}}" bindinput="onInput" data-field="amount" placeholder="0.00" focus="{{!isEdit}}" />
+    </view>
+
+    <!-- 类别选择 -->
+    <view class="category-section">
+      <text class="form-section-title">开销类别</text>
+      <view class="category-grid">
+        <view 
+          class="category-item {{form.category === item.key ? 'active' : ''}}" 
+          wx:for="{{categories}}" 
+          wx:key="key"
+          bindtap="selectCategory" 
+          data-key="{{item.key}}">
+          <text class="category-icon">{{item.icon}}</text>
+          <text class="category-label">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 日期 -->
+    <view class="form-row">
+      <text class="form-label">日期</text>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <view class="form-picker">{{form.date || '请选择日期'}}</view>
+      </picker>
+    </view>
+
+    <!-- 时间 -->
+    <view class="form-row">
+      <text class="form-label">时间</text>
+      <picker mode="time" value="{{form.time}}" bindchange="onTimeChange">
+        <view class="form-picker">{{form.time || '请选择时间'}}</view>
+      </picker>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-row form-row-vertical">
+      <text class="form-label">备注</text>
+      <textarea class="form-textarea" value="{{form.note}}" bindinput="onInput" data-field="note" placeholder="例如：两块场地 2小时，6人AA..." />
+    </view>
+
+    <!-- 关联活动 -->
+    <view class="form-row">
+      <text class="form-label">关联活动</text>
+      <picker mode="selector" range="{{activityLabels}}" bindchange="onActivityChange">
+        <view class="form-picker">{{form.activityLabel || '不关联（可选）'}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 提交 -->
+  <view class="submit-section">
+    <button class="btn-submit" bindtap="submitBill">
+      {{isEdit ? '更新记录' : '记录支出'}}
+    </button>
+    <button class="btn-delete" wx:if="{{isEdit}}" bindtap="deleteBill">删除此记录</button>
+  </view>
+</view>

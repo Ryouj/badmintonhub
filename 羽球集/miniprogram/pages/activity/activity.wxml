@@ -1,0 +1,45 @@
+<!-- pages/activity/activity.wxml - 活动记录 -->
+<view class="page">
+  <view class="card">
+    <!-- 日期 -->
+    <view class="form-row">
+      <text class="form-label">日期</text>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <view class="form-picker">{{form.date || '请选择日期'}}</view>
+      </picker>
+    </view>
+
+    <!-- 时长 -->
+    <view class="form-row">
+      <text class="form-label">运动时长</text>
+      <view class="duration-inputs">
+        <input class="duration-input" type="number" value="{{form.durationHours}}" bindinput="onInput" data-field="durationHours" placeholder="0" />
+        <text class="duration-sep">小时</text>
+        <input class="duration-input" type="number" value="{{form.durationMinutes}}" bindinput="onInput" data-field="durationMinutes" placeholder="0" />
+        <text class="duration-sep">分钟</text>
+      </view>
+    </view>
+
+    <!-- 球馆 -->
+    <view class="form-row">
+      <text class="form-label">球馆</text>
+      <input class="form-input-inline" value="{{form.location}}" bindinput="onInput" data-field="location" placeholder="如：XX羽毛球馆" />
+    </view>
+
+    <!-- 人数 -->
+    <view class="form-row">
+      <text class="form-label">参与人数</text>
+      <input class="form-input-inline" type="number" value="{{form.playerCount}}" bindinput="onInput" data-field="playerCount" placeholder="如：4" />
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-row form-row-vertical">
+      <text class="form-label">备注</text>
+      <textarea class="form-textarea" value="{{form.note}}" bindinput="onInput" data-field="note" placeholder="今天的感受、对局情况..." />
+    </view>
+  </view>
+
+  <view class="submit-section">
+    <button class="btn-submit" bindtap="submitActivity">记录活动</button>
+  </view>
+</view>

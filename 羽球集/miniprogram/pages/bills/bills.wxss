@@ -1,0 +1,131 @@
+/* pages/bills/bills.wxss */
+.page {
+  padding-bottom: 120rpx;
+}
+
+/* 筛选栏 */
+.filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background: #fff;
+  margin-bottom: 20rpx;
+}
+
+.filter-month {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-summary {
+  display: flex;
+  gap: 20rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.filter-amount {
+  font-size: 26rpx;
+}
+
+/* 分组 */
+.bill-group {
+  margin-bottom: 20rpx;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 30rpx;
+}
+
+.group-date {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.group-total {
+  font-size: 28rpx;
+}
+
+/* 账单项 */
+.bill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 24rpx 30rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.bill-left {
+  display: flex;
+  align-items: center;
+}
+
+.bill-category-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+  width: 60rpx;
+  text-align: center;
+}
+
+.bill-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.bill-category {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.bill-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.bill-right {
+  text-align: right;
+}
+
+.bill-amount {
+  font-size: 30rpx;
+}
+
+.bill-note {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+  display: block;
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* FAB */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 120rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: #1aad19;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 20rpx rgba(26, 173, 25, 0.4);
+}
+
+.fab-icon {
+  font-size: 48rpx;
+  color: #fff;
+  line-height: 1;
+}

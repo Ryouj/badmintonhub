@@ -1,0 +1,47 @@
+<!-- pages/bills/bills.wxml - 账单列表 -->
+<view class="page">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <picker mode="date" fields="month" value="{{filterMonth}}" bindchange="onMonthChange">
+      <view class="filter-month">{{filterMonthText}}</view>
+    </picker>
+    <view class="filter-summary">
+      <text>共 {{totalCount}} 笔</text>
+      <text class="amount filter-amount">¥{{totalAmount}}</text>
+    </view>
+  </view>
+
+  <!-- 账单列表 -->
+  <block wx:if="{{bills.length > 0}}">
+    <view class="bill-group" wx:for="{{groupedBills}}" wx:key="date" wx:for-item="group">
+      <view class="group-header">
+        <text class="group-date">{{group.date}}</text>
+        <text class="group-total amount">¥{{group.total}}</text>
+      </view>
+      
+      <view class="bill-item" wx:for="{{group.items}}" wx:key="_id" bindtap="goEdit" data-id="{{item._id}}" bindlongpress="onLongPress" data-id="{{item._id}}">
+        <view class="bill-left">
+          <text class="bill-category-icon">{{item.categoryIcon}}</text>
+          <view class="bill-info">
+            <text class="bill-category">{{item.categoryLabel}}</text>
+            <text class="bill-time">{{item.timeText}}</text>
+          </view>
+        </view>
+        <view class="bill-right">
+          <text class="bill-amount amount">¥{{item.amount}}</text>
+          <text class="bill-note" wx:if="{{item.note}}">{{item.note}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class="empty-state" wx:else>
+    <text>📝</text>
+    <text>还没有账单记录</text>
+  </view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="fab" bindtap="goAdd">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

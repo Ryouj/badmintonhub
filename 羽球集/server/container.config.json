@@ -1,0 +1,22 @@
+# 云托管配置文件
+# 在微信云托管控制台创建服务时使用
+
+{
+  "name": "yuqiuji-server",
+  "runtime": "custom",
+  "port": 8080,
+  "envParams": {
+    "WX_APP_ID": "",
+    "WX_APP_SECRET": "",
+    "JWT_SECRET": "your-jwt-secret-change-me"
+  },
+  "vpc": {},
+  "mysql": {
+    "enabled": true,
+    "version": "8.0"
+  },
+  "cpu": 0.25,
+  "mem": 0.5,
+  "minNum": 1,
+  "maxNum": 3
+}

@@ -1,0 +1,82 @@
+<!-- pages/stats/stats.wxml - 统计汇总 -->
+<view class="page">
+  <!-- 时间范围切换 -->
+  <view class="period-tabs">
+    <view class="tab {{period === 'week' ? 'active' : ''}}" bindtap="switchPeriod" data-period="week">本周</view>
+    <view class="tab {{period === 'month' ? 'active' : ''}}" bindtap="switchPeriod" data-period="month">本月</view>
+    <view class="tab {{period === 'year' ? 'active' : ''}}" bindtap="switchPeriod" data-period="year">今年</view>
+    <view class="tab {{period === 'all' ? 'active' : ''}}" bindtap="switchPeriod" data-period="all">全部</view>
+  </view>
+
+  <!-- 总览卡片 -->
+  <view class="overview-card">
+    <view class="overview-item">
+      <text class="overview-value amount">¥{{summary.totalAmount || '0.00'}}</text>
+      <text class="overview-label">总支出</text>
+    </view>
+    <view class="overview-item">
+      <text class="overview-value">{{summary.totalDuration || 0}}h</text>
+      <text class="overview-label">运动时长</text>
+    </view>
+    <view class="overview-item">
+      <text class="overview-value">{{summary.totalCount || 0}}</text>
+      <text class="overview-label">活动次数</text>
+    </view>
+    <view class="overview-item">
+      <text class="overview-value amount">¥{{summary.avgPerTime || '0.00'}}</text>
+      <text class="overview-label">场均花费</text>
+    </view>
+  </view>
+
+  <!-- 类别占比 -->
+  <view class="card">
+    <view class="section-title">📊 类别占比</view>
+    <view class="chart-container">
+      <canvas canvas-id="pieChart" id="pieChart" class="pie-chart"></canvas>
+    </view>
+    <view class="category-legend">
+      <view class="legend-item" wx:for="{{categoryStats}}" wx:key="key">
+        <view class="legend-color" style="background: {{item.color}}"></view>
+        <text class="legend-label">{{item.label}}</text>
+        <text class="legend-amount amount">¥{{item.amount}}</text>
+        <text class="legend-percent">{{item.percent}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 月度趋势 -->
+  <view class="card">
+    <view class="section-title">📈 月度趋势</view>
+    <view class="chart-container">
+      <canvas canvas-id="barChart" id="barChart" class="bar-chart"></canvas>
+    </view>
+  </view>
+
+  <!-- 运动时长统计 -->
+  <view class="card">
+    <view class="section-title">⏱ 运动统计</view>
+    <view class="duration-stats">
+      <view class="duration-item">
+        <text class="duration-num">{{summary.totalDuration || 0}}</text>
+        <text class="duration-unit">总运动时长 (小时)</text>
+      </view>
+      <view class="duration-item">
+        <text class="duration-num">{{summary.avgDuration || 0}}</text>
+        <text class="duration-unit">平均每次时长 (分钟)</text>
+      </view>
+      <view class="duration-item">
+        <text class="duration-num">{{summary.maxDuration || 0}}</text>
+        <text class="duration-unit">最长单次 (分钟)</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 高频球馆 -->
+  <view class="card" wx:if="{{topVenues.length > 0}}">
+    <view class="section-title">🏟️ 常去球馆</view>
+    <view class="venue-item flex-between" wx:for="{{topVenues}}" wx:key="name">
+      <text class="venue-name">{{index + 1}}. {{item.name}}</text>
+      <text class="venue-count">{{item.count}}次</text>
+    </view>
+  </view>
+</view>

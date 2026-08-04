@@ -1,0 +1,79 @@
+/* pages/activity/activity.wxss */
+.page {
+  padding-bottom: 60rpx;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.form-row-vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.form-picker {
+  color: #666;
+  font-size: 28rpx;
+}
+
+.form-input-inline {
+  text-align: right;
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.duration-inputs {
+  display: flex;
+  align-items: center;
+}
+
+.duration-input {
+  width: 80rpx;
+  text-align: center;
+  font-size: 28rpx;
+  padding: 8rpx;
+  border: 2rpx solid #e8e8e8;
+  border-radius: 8rpx;
+}
+
+.duration-sep {
+  margin: 0 8rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 140rpx;
+  padding: 16rpx 0;
+  font-size: 28rpx;
+  margin-top: 10rpx;
+}
+
+.submit-section {
+  padding: 30rpx 20rpx;
+}
+
+.btn-submit {
+  width: 100%;
+  background: #1aad19;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+}
