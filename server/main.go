@@ -63,6 +63,9 @@ func main() {
 			// 活动
 			auth.POST("/activities", handlers.CreateActivity)
 			auth.GET("/activities", handlers.ListActivities)
+			auth.GET("/activities/:id", handlers.GetActivity)
+			auth.PUT("/activities/:id", handlers.UpdateActivity)
+			auth.DELETE("/activities/:id", handlers.DeleteActivity)
 
 			// 统计
 			auth.GET("/stats/summary", handlers.GetSummary)

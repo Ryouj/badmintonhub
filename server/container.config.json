@@ -1,6 +1,3 @@
-# 云托管配置文件
-# 在微信云托管控制台创建服务时使用
-
 {
   "name": "yuqiuji-server",
   "runtime": "custom",

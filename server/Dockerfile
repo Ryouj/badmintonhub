@@ -2,7 +2,7 @@
 # 多阶段构建
 
 # ---- 构建阶段 ----
-FROM golang:1.21-alpine AS builder
+FROM golang:1.22-alpine AS builder
 
 # 设置 Go 代理（国内加速）
 ENV GOPROXY=https://goproxy.cn,direct

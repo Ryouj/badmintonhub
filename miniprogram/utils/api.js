@@ -89,33 +89,36 @@ function del(path) {
 // 微信登录
 async function login() {
   const res = await wx.login();
-  return request('POST', '/api/login', { code: res.code });
+  return request('POST', '/login', { code: res.code });
 }
 
 // 用户
 const userAPI = {
-  getProfile: () => get('/api/user/profile'),
-  updateProfile: (profile) => put('/api/user/profile', profile)
+  getProfile: () => get('/user/profile'),
+  updateProfile: (profile) => put('/user/profile', profile)
 };
 
 // 账单
 const billAPI = {
-  create: (bill) => post('/api/bills', bill),
-  update: (id, bill) => put('/api/bills/' + id, bill),
-  delete: (id) => del('/api/bills/' + id),
-  get: (id) => get('/api/bills/' + id),
-  list: (params) => get('/api/bills', params)
+  create: (bill) => post('/bills', bill),
+  update: (id, bill) => put('/bills/' + id, bill),
+  delete: (id) => del('/bills/' + id),
+  get: (id) => get('/bills/' + id),
+  list: (params) => get('/bills', params)
 };
 
 // 活动
 const activityAPI = {
-  create: (activity) => post('/api/activities', activity),
-  list: (params) => get('/api/activities', params)
+  create: (activity) => post('/activities', activity),
+  get: (id) => get('/activities/' + id),
+  update: (id, activity) => put('/activities/' + id, activity),
+  delete: (id) => del('/activities/' + id),
+  list: (params) => get('/activities', params)
 };
 
 // 统计
 const statsAPI = {
-  summary: (period) => get('/api/stats/summary', { period })
+  summary: (period) => get('/stats/summary', { period })
 };
 
 module.exports = {
