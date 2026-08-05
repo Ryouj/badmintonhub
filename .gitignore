@@ -25,6 +25,8 @@ Thumbs.db
 
 # Go
 server/vendor/
+.gocache/
+badmintonhub-server
 
 # Miniprogram
 miniprogram/.tea/

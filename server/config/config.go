@@ -87,7 +87,7 @@ func resolveMySQLConfig() MySQLConfig {
 // createDatabaseIfNotExists 在连接目标库之前先确保库存在
 func createDatabaseIfNotExists(mc MySQLConfig) {
 	// 不带 database 名的 DSN，只连 MySQL 服务器
-	adminDSN := fmt.Sprintf("%s:%s@tcp(%s)/?charset=utf8mb4&parseTime=True&loc=Local&tls=skip-verify",
+	adminDSN := fmt.Sprintf("%s:%s@tcp(%s)/?charset=utf8mb4&parseTime=True&loc=Local",
 		mc.Username, mc.Password, mc.Address)
 
 	db, err := sql.Open("mysql", adminDSN)
@@ -110,7 +110,7 @@ func createDatabaseIfNotExists(mc MySQLConfig) {
 
 // connectWithRetry 带重试的连接
 func connectWithRetry(mc MySQLConfig) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&tls=skip-verify",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		mc.Username, mc.Password, mc.Address, mc.Database)
 
 	maxRetries := 10
