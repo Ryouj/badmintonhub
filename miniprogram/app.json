@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/activity/activity",
+    "pages/activity-list/activity-list",
     "pages/bills/bills",
     "pages/bill-add/bill-add",
     "pages/stats/stats",

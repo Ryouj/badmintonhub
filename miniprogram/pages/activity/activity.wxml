@@ -1,4 +1,4 @@
-<!-- pages/activity/activity.wxml - 活动记录 -->
+<!-- pages/activity/activity.wxml - 活动记录（新建/编辑） -->
 <view class="page">
   <view class="card">
     <!-- 日期 -->
@@ -40,6 +40,7 @@
   </view>
 
   <view class="submit-section">
-    <button class="btn-submit" bindtap="submitActivity">记录活动</button>
+    <button class="btn-submit" bindtap="submitActivity">{{isEdit ? '更新活动' : '记录活动'}}</button>
+    <button class="btn-delete" wx:if="{{isEdit}}" bindtap="deleteActivity">删除此活动</button>
   </view>
 </view>

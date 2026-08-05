@@ -1,0 +1,138 @@
+/* pages/activity-list/activity-list.wxss */
+.page {
+  padding: 0 0 120rpx 0;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.summary-bar {
+  display: flex;
+  background: linear-gradient(135deg, #1aad19, #27ae60);
+  padding: 36rpx 20rpx;
+  justify-content: space-around;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.summary-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.summary-label {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.8);
+  margin-top: 6rpx;
+}
+
+.activity-list {
+  padding: 16rpx;
+}
+
+.activity-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+}
+
+.item-left {
+  width: 140rpx;
+  flex-shrink: 0;
+  border-right: 2rpx solid #f0f0f0;
+  padding-right: 20rpx;
+}
+
+.item-date {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.item-location {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-center {
+  flex: 1;
+  padding-left: 24rpx;
+}
+
+.item-duration {
+  font-size: 30rpx;
+  color: #1aad19;
+  font-weight: 600;
+}
+
+.item-meta {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.item-note {
+  max-width: 200rpx;
+  font-size: 22rpx;
+  color: #aaa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 100rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  margin-top: 20rpx;
+}
+
+.empty-btn {
+  margin-top: 40rpx;
+  background: #1aad19;
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 40rpx;
+  padding: 16rpx 60rpx;
+}
+
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 60rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: #1aad19;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(26,173,25,0.4);
+}
+
+.fab-icon {
+  font-size: 56rpx;
+  color: #fff;
+  line-height: 1;
+}

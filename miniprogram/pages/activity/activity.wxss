@@ -77,3 +77,14 @@
   font-size: 32rpx;
   font-weight: 500;
 }
+
+.btn-delete {
+  width: 100%;
+  background: #fff;
+  color: #e74c3c;
+  border: 2rpx solid #e74c3c;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 32rpx;
+  margin-top: 20rpx;
+}

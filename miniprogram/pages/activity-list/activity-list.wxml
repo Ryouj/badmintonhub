@@ -1,0 +1,45 @@
+<!-- pages/activity-list/activity-list.wxml -->
+<view class="page">
+  <!-- 顶部汇总 -->
+  <view class="summary-bar">
+    <view class="summary-item">
+      <text class="summary-num">{{totalDuration}}</text>
+      <text class="summary-label">总时长(h)</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-num">{{totalCount}}</text>
+      <text class="summary-label">活动次数</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-num">{{avgDuration}}</text>
+      <text class="summary-label">场均(min)</text>
+    </view>
+  </view>
+
+  <!-- 活动列表 -->
+  <view class="activity-list" wx:if="{{list.length > 0}}">
+    <view class="activity-item" wx:for="{{list}}" wx:key="id" bindlongpress="onLongPress" data-id="{{item.id}}" bindtap="goEdit" data-id="{{item.id}}">
+      <view class="item-left">
+        <view class="item-date">{{item.dateText}}</view>
+        <view class="item-location">{{item.location || '未记录球馆'}}</view>
+      </view>
+      <view class="item-center">
+        <view class="item-duration">{{item.durationText}}</view>
+        <view class="item-meta">{{item.playerCount}}人 · {{item.billCount}}笔账单</view>
+      </view>
+      <view class="item-note" wx:if="{{item.note}}">{{item.note}}</view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:else>
+    <text class="empty-icon">🏸</text>
+    <text class="empty-text">还没有活动记录</text>
+    <button class="empty-btn" bindtap="goAdd">记录第一次活动</button>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="goAdd" wx:if="{{list.length > 0}}">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

@@ -16,7 +16,19 @@ func CreateActivity(c *gin.Context) {
 
 	var act models.Activity
 	if err := c.ShouldBindJSON(&act); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数错误"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数格式错误"})
+		return
+	}
+
+	// 校验时长
+	if act.Duration <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "运动时长必须大于0"})
+		return
+	}
+
+	// 校验时长上限（不超过24小时）
+	if act.Duration > 1440 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "运动时长不能超过24小时"})
 		return
 	}
 
@@ -66,7 +78,17 @@ func UpdateActivity(c *gin.Context) {
 
 	var update models.Activity
 	if err := c.ShouldBindJSON(&update); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数错误"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数格式错误"})
+		return
+	}
+
+	// 校验时长
+	if update.Duration <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "运动时长必须大于0"})
+		return
+	}
+	if update.Duration > 1440 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "运动时长不能超过24小时"})
 		return
 	}
 
@@ -87,8 +109,9 @@ func DeleteActivity(c *gin.Context) {
 	openid := c.GetString("openid")
 	id := c.Param("id")
 
-	if err := config.DB.Where("id = ? AND open_id = ?", id, openid).Delete(&models.Activity{}).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "删除失败"})
+	result := config.DB.Where("id = ? AND open_id = ?", id, openid).Delete(&models.Activity{})
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "活动不存在"})
 		return
 	}
 
@@ -100,6 +123,9 @@ func ListActivities(c *gin.Context) {
 	openid := c.GetString("openid")
 	pageSizeStr := c.DefaultQuery("pageSize", "20")
 	pageSize, _ := strconv.Atoi(pageSizeStr)
+	if pageSize <= 0 || pageSize > 200 {
+		pageSize = 20
+	}
 
 	var total int64
 	config.DB.Model(&models.Activity{}).Where("open_id = ?", openid).Count(&total)
@@ -119,6 +145,11 @@ func ListActivities(c *gin.Context) {
 			Activity:  a,
 			BillCount: count,
 		})
+	}
+
+	// 空列表时返回空数组而非 null
+	if result == nil {
+		result = []models.ActivityWithBills{}
 	}
 
 	c.JSON(http.StatusOK, gin.H{

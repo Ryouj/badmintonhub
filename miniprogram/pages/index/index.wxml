@@ -81,7 +81,7 @@
   <view class="section">
     <view class="section-header">
       <text class="section-title">最近活动</text>
-      <text class="section-more" bindtap="goBills">更多 ></text>
+      <text class="section-more" bindtap="goActivityList">更多 ></text>
     </view>
     
     <block wx:if="{{recentActivities.length > 0}}">

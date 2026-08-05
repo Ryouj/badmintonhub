@@ -11,14 +11,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 合法类别白名单
+var validCategories = map[string]bool{
+	"court": true, "shuttle": true, "drink": true,
+	"stringing": true, "equipment": true, "other": true,
+}
+
 // CreateBill 创建账单
 func CreateBill(c *gin.Context) {
 	openid := c.GetString("openid")
 
 	var bill models.Bill
 	if err := c.ShouldBindJSON(&bill); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数错误"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数格式错误"})
 		return
+	}
+
+	// 校验金额
+	if bill.Amount <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "金额必须大于0"})
+		return
+	}
+
+	// 校验类别
+	if !validCategories[bill.Category] {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "无效的消费类别"})
+		return
+	}
+
+	// 校验日期
+	if bill.Date.IsZero() {
+		bill.Date = time.Now()
 	}
 
 	bill.OpenID = openid
@@ -57,8 +80,25 @@ func UpdateBill(c *gin.Context) {
 
 	var update models.Bill
 	if err := c.ShouldBindJSON(&update); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数错误"})
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数格式错误"})
 		return
+	}
+
+	// 校验金额
+	if update.Amount <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "金额必须大于0"})
+		return
+	}
+
+	// 校验类别
+	if !validCategories[update.Category] {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "无效的消费类别"})
+		return
+	}
+
+	// 校验日期
+	if update.Date.IsZero() {
+		update.Date = time.Now()
 	}
 
 	config.DB.Model(&bill).Updates(map[string]interface{}{
@@ -79,8 +119,9 @@ func DeleteBill(c *gin.Context) {
 	openid := c.GetString("openid")
 	id := c.Param("id")
 
-	if err := config.DB.Where("id = ? AND open_id = ?", id, openid).Delete(&models.Bill{}).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "删除失败"})
+	result := config.DB.Where("id = ? AND open_id = ?", id, openid).Delete(&models.Bill{})
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "账单不存在"})
 		return
 	}
 
@@ -90,9 +131,12 @@ func DeleteBill(c *gin.Context) {
 // ListBills 账单列表（按月筛选）
 func ListBills(c *gin.Context) {
 	openid := c.GetString("openid")
-	month := c.Query("month")            // 2026-08
+	month := c.Query("month") // 2026-08
 	pageSizeStr := c.DefaultQuery("pageSize", "50")
 	pageSize, _ := strconv.Atoi(pageSizeStr)
+	if pageSize <= 0 || pageSize > 200 {
+		pageSize = 50
+	}
 
 	query := config.DB.Where("open_id = ?", openid)
 
