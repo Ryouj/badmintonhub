@@ -1,5 +1,5 @@
 // utils/api.js - HTTP API 客户端（替代云函数调用）
-const BASE_URL = 'https://your-cloud-run-domain.com/api'; // 替换为云托管域名
+const BASE_URL = 'https://golang-gbnx-291667-8-1419304314.sh.run.tcloudbase.com/api';
 
 let token = '';
 
