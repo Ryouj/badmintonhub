@@ -3,6 +3,11 @@ const api = require('./utils/api');
 
 App({
   onLaunch() {
+    // 初始化云开发（callContainer 调用云托管必需）
+    wx.cloud.init({
+      env: 'prod-d5gqebf4i52aaa93a'
+    });
+
     api.initToken();
     this.autoLogin();
   },

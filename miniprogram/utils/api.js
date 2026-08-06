@@ -1,5 +1,6 @@
-// utils/api.js - HTTP API 客户端（替代云函数调用）
-const BASE_URL = 'https://golang-gbnx-291667-8-1419304314.sh.run.tcloudbase.com/api';
+// utils/api.js - CloudBase callContainer API 客户端
+const CLOUD_ENV = 'prod-d5gqebf4i52aaa93a';
+const SERVICE_NAME = 'golang-gbnx';
 
 let token = '';
 
@@ -25,20 +26,21 @@ function getToken() {
   return token;
 }
 
-// 通用请求
-function request(method, path, data = {}) {
+// 通用请求（callContainer 内网调用）
+function request(method, path, data) {
   return new Promise((resolve, reject) => {
     const header = { 'Content-Type': 'application/json' };
     if (token) {
       header['Authorization'] = 'Bearer ' + token;
     }
+    header['X-WX-SERVICE'] = SERVICE_NAME;
 
-    wx.request({
-      url: BASE_URL + path,
-      method,
-      header,
+    wx.cloud.callContainer({
+      config: { env: CLOUD_ENV },
+      path: path,
+      method: method,
+      header: header,
       data: method !== 'GET' ? data : undefined,
-      dataType: 'json',
       success(res) {
         if (res.statusCode === 401) {
           clearToken();
@@ -61,10 +63,11 @@ function request(method, path, data = {}) {
 }
 
 // GET 请求
-function get(path, params = {}) {
+function get(path, params) {
+  if (!params) params = {};
   const query = Object.keys(params)
-    .filter(k => params[k] !== undefined && params[k] !== null && params[k] !== '')
-    .map(k => k + '=' + encodeURIComponent(params[k]))
+    .filter(function (k) { return params[k] !== undefined && params[k] !== null && params[k] !== ''; })
+    .map(function (k) { return k + '=' + encodeURIComponent(params[k]); })
     .join('&');
   return request('GET', path + (query ? '?' + query : ''));
 }
@@ -87,9 +90,10 @@ function del(path) {
 // === 业务 API ===
 
 // 微信登录
-async function login(wxProfile = {}) {
-  const res = await wx.login();
-  return request('POST', '/login', {
+async function login(wxProfile) {
+  if (!wxProfile) wxProfile = {};
+  var res = await wx.login();
+  return request('POST', '/api/login', {
     code: res.code,
     nickName: wxProfile.nickName || '',
     avatarUrl: wxProfile.avatarUrl || ''
@@ -97,47 +101,46 @@ async function login(wxProfile = {}) {
 }
 
 // 用户
-const userAPI = {
-  getProfile: () => get('/user/profile'),
-  updateProfile: (profile) => put('/user/profile', profile)
+var userAPI = {
+  getProfile: function () { return get('/api/user/profile'); },
+  updateProfile: function (profile) { return put('/api/user/profile', profile); }
 };
 
 // 账单
-const billAPI = {
-  create: (bill) => post('/bills', bill),
-  update: (id, bill) => put('/bills/' + id, bill),
-  delete: (id) => del('/bills/' + id),
-  get: (id) => get('/bills/' + id),
-  list: (params) => get('/bills', params)
+var billAPI = {
+  create: function (bill) { return post('/api/bills', bill); },
+  update: function (id, bill) { return put('/api/bills/' + id, bill); },
+  delete: function (id) { return del('/api/bills/' + id); },
+  get: function (id) { return get('/api/bills/' + id); },
+  list: function (params) { return get('/api/bills', params); }
 };
 
 // 活动
-const activityAPI = {
-  create: (activity) => post('/activities', activity),
-  get: (id) => get('/activities/' + id),
-  update: (id, activity) => put('/activities/' + id, activity),
-  delete: (id) => del('/activities/' + id),
-  list: (params) => get('/activities', params)
+var activityAPI = {
+  create: function (activity) { return post('/api/activities', activity); },
+  get: function (id) { return get('/api/activities/' + id); },
+  update: function (id, activity) { return put('/api/activities/' + id, activity); },
+  delete: function (id) { return del('/api/activities/' + id); },
+  list: function (params) { return get('/api/activities', params); }
 };
 
 // 统计
-const statsAPI = {
-  summary: (period) => get('/stats/summary', { period })
+var statsAPI = {
+  summary: function (period) { return get('/api/stats/summary', { period: period }); }
 };
 
 module.exports = {
-  initToken,
-  saveToken,
-  clearToken,
-  getToken,
-  get,
-  post,
-  put,
-  del,
-  login,
-  userAPI,
-  billAPI,
-  activityAPI,
-  statsAPI,
-  BASE_URL
+  initToken: initToken,
+  saveToken: saveToken,
+  clearToken: clearToken,
+  getToken: getToken,
+  get: get,
+  post: post,
+  put: put,
+  del: del,
+  login: login,
+  userAPI: userAPI,
+  billAPI: billAPI,
+  activityAPI: activityAPI,
+  statsAPI: statsAPI
 };
