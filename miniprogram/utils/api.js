@@ -87,9 +87,13 @@ function del(path) {
 // === 业务 API ===
 
 // 微信登录
-async function login() {
+async function login(wxProfile = {}) {
   const res = await wx.login();
-  return request('POST', '/login', { code: res.code });
+  return request('POST', '/login', {
+    code: res.code,
+    nickName: wxProfile.nickName || '',
+    avatarUrl: wxProfile.avatarUrl || ''
+  });
 }
 
 // 用户

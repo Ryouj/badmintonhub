@@ -59,14 +59,16 @@
     </view>
     
     <block wx:if="{{recentBills.length > 0}}">
-      <view class="bill-item" wx:for="{{recentBills}}" wx:key="_id" bindtap="goBillDetail" data-id="{{item._id}}">
-        <view class="bill-left">
-          <text class="bill-category">{{item.categoryIcon}} {{item.categoryLabel}}</text>
-          <text class="bill-date">{{item.dateText}}</text>
+      <view class="bill-item" wx:for="{{recentBills}}" wx:key="id" bindtap="goBillDetail" data-id="{{item.id}}">
+        <view class="bill-items-row">
+          <view class="bill-sub-tag" wx:for="{{item.items}}" wx:key="id" wx:for-item="sub">
+            <text class="tag-cat">{{sub.categoryLabel}}</text>
+            <text class="tag-amount">¥{{sub.amountText || sub.amount}}</text>
+          </view>
         </view>
-        <view class="bill-right">
-          <text class="bill-amount amount">¥{{item.amount}}</text>
-          <text class="bill-note">{{item.note || ''}}</text>
+        <view class="bill-footer-row">
+          <text class="bill-date">{{item.dateText}}</text>
+          <text class="bill-total amount">¥{{item.totalText}}</text>
         </view>
       </view>
     </block>

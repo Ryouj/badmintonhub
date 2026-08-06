@@ -33,8 +33,22 @@ func Login(c *gin.Context) {
 	var user models.User
 	result := config.DB.Where("open_id = ?", openid).First(&user)
 	if result.Error != nil {
-		user = models.User{OpenID: openid}
+		user = models.User{
+			OpenID:    openid,
+			NickName:  req.NickName,
+			AvatarURL: req.AvatarURL,
+		}
 		config.DB.Create(&user)
+	} else {
+		// 如果微信有新的头像昵称，更新
+		if req.NickName != "" && user.NickName == "" {
+			config.DB.Model(&user).Updates(map[string]interface{}{
+				"nick_name":  req.NickName,
+				"avatar_url": req.AvatarURL,
+			})
+			user.NickName = req.NickName
+			user.AvatarURL = req.AvatarURL
+		}
 	}
 
 	// 生成 JWT

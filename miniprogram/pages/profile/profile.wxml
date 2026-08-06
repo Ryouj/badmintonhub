@@ -11,7 +11,10 @@
     <text class="nickname">{{profile.nickName || '点击设置昵称'}}</text>
     <text class="bio">{{profile.bio || '介绍一下你对羽毛球的热爱吧~'}}</text>
     
-    <button class="edit-btn" bindtap="startEdit">✏️ 编辑档案</button>
+    <view class="header-btns">
+      <button class="edit-btn" bindtap="startEdit">✏️ 编辑档案</button>
+      <button class="sync-btn" bindtap="syncFromWx">🔄 从微信同步</button>
+    </view>
   </view>
 
   <!-- 技术水平 -->

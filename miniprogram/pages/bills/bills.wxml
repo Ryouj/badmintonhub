@@ -1,4 +1,4 @@
-<!-- pages/bills/bills.wxml - 账单列表 -->
+<!-- pages/bills/bills.wxml - 账单列表（多项目模式） -->
 <view class="page">
   <!-- 筛选栏 -->
   <view class="filter-bar">
@@ -19,17 +19,22 @@
         <text class="group-total amount">¥{{group.total}}</text>
       </view>
       
-      <view class="bill-item" wx:for="{{group.items}}" wx:key="_id" bindtap="goEdit" data-id="{{item._id}}" bindlongpress="onLongPress" data-id="{{item._id}}">
-        <view class="bill-left">
-          <text class="bill-category-icon">{{item.categoryIcon}}</text>
-          <view class="bill-info">
-            <text class="bill-category">{{item.categoryLabel}}</text>
-            <text class="bill-time">{{item.timeText}}</text>
+      <view class="bill-item" wx:for="{{group.items}}" wx:key="id" bindtap="goEdit" data-id="{{item.id}}" bindlongpress="onLongPress" data-id="{{item.id}}">
+        <!-- 多项目明细 -->
+        <view class="bill-items-row">
+          <view class="bill-sub-item" wx:for="{{item.items}}" wx:key="id" wx:for-item="sub">
+            <view class="sub-dot chip-{{sub.category}}"></view>
+            <text class="sub-cat">{{sub.categoryLabel}}</text>
+            <text class="sub-amount">¥{{sub.amountText}}</text>
           </view>
         </view>
-        <view class="bill-right">
-          <text class="bill-amount amount">¥{{item.amount}}</text>
-          <text class="bill-note" wx:if="{{item.note}}">{{item.note}}</text>
+        <!-- 底部信息 -->
+        <view class="bill-footer">
+          <view class="bill-left">
+            <text class="bill-time">{{item.timeText}}</text>
+            <text class="bill-note" wx:if="{{item.note}}">{{item.note}}</text>
+          </view>
+          <text class="bill-total amount">¥{{item.totalText}}</text>
         </view>
       </view>
     </view>

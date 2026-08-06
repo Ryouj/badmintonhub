@@ -51,8 +51,11 @@ Page({
     return bills.map(b => ({
       ...b,
       dateText: util.formatDate(b.date, 'MM-DD HH:mm'),
-      categoryLabel: this.getCategoryLabel(b.category),
-      categoryIcon: this.getCategoryIcon(b.category)
+      totalText: (b.totalAmount || b.amount || 0).toFixed(2),
+      items: (b.items || []).map(it => ({
+        ...it,
+        categoryLabel: this.getCategoryLabel(it.category)
+      }))
     }));
   },
 

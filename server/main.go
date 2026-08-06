@@ -22,7 +22,8 @@ func main() {
 	// 自动迁移表结构
 	config.DB.AutoMigrate(
 		&models.User{},
-		&models.Bill{},
+		&models.BillSession{},
+		&models.BillItem{},
 		&models.Activity{},
 	)
 

@@ -11,127 +11,160 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 合法类别白名单
 var validCategories = map[string]bool{
 	"court": true, "shuttle": true, "drink": true,
 	"stringing": true, "equipment": true, "other": true,
 }
 
-// CreateBill 创建账单
+// CreateBill 创建记账记录（支持多项目）
 func CreateBill(c *gin.Context) {
 	openid := c.GetString("openid")
 
-	var bill models.Bill
-	if err := c.ShouldBindJSON(&bill); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数格式错误"})
+	var req models.CreateBillReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数格式错误：至少需要一个项目"})
 		return
 	}
 
-	// 校验金额
-	if bill.Amount <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "金额必须大于0"})
-		return
+	if req.Date.IsZero() {
+		req.Date = time.Now()
 	}
 
-	// 校验类别
-	if !validCategories[bill.Category] {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "无效的消费类别"})
-		return
+	// 计算总额
+	var total float64
+	var items []models.BillItem
+	for _, it := range req.Items {
+		if it.Amount <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "金额必须大于0"})
+			return
+		}
+		if !validCategories[it.Category] {
+			c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "无效的消费类别: " + it.Category})
+			return
+		}
+		total += it.Amount
+		items = append(items, models.BillItem{
+			Category: it.Category,
+			Amount:   it.Amount,
+		})
 	}
 
-	// 校验日期
-	if bill.Date.IsZero() {
-		bill.Date = time.Now()
+	session := models.BillSession{
+		OpenID:        openid,
+		Date:          req.Date,
+		Note:          req.Note,
+		ActivityID:    req.ActivityID,
+		ActivityLabel: req.ActivityLabel,
+		TotalAmount:   total,
+		ItemCount:     len(items),
+		Items:         items,
 	}
 
-	bill.OpenID = openid
-	if err := config.DB.Create(&bill).Error; err != nil {
+	if err := config.DB.Create(&session).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "创建失败"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"code": 0, "data": bill})
+	// 重新查询带 items
+	config.DB.Preload("Items").First(&session, session.ID)
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": toBillResp(session)})
 }
 
-// GetBill 获取单条账单
+// GetBill 获取单条记账记录
 func GetBill(c *gin.Context) {
 	openid := c.GetString("openid")
 	id := c.Param("id")
 
-	var bill models.Bill
-	if err := config.DB.Where("id = ? AND open_id = ?", id, openid).First(&bill).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "账单不存在"})
+	var session models.BillSession
+	if err := config.DB.Preload("Items").
+		Where("id = ? AND open_id = ?", id, openid).
+		First(&session).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "记录不存在"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"code": 0, "data": bill})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": toBillResp(session)})
 }
 
-// UpdateBill 更新账单
+// UpdateBill 更新记账记录
 func UpdateBill(c *gin.Context) {
 	openid := c.GetString("openid")
 	id := c.Param("id")
 
-	var bill models.Bill
-	if err := config.DB.Where("id = ? AND open_id = ?", id, openid).First(&bill).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "账单不存在"})
+	var session models.BillSession
+	if err := config.DB.Where("id = ? AND open_id = ?", id, openid).First(&session).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "记录不存在"})
 		return
 	}
 
-	var update models.Bill
-	if err := c.ShouldBindJSON(&update); err != nil {
+	var req models.CreateBillReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "参数格式错误"})
 		return
 	}
 
-	// 校验金额
-	if update.Amount <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "金额必须大于0"})
-		return
+	if req.Date.IsZero() {
+		req.Date = session.Date
 	}
 
-	// 校验类别
-	if !validCategories[update.Category] {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "无效的消费类别"})
-		return
+	// 重新计算
+	var total float64
+	var items []models.BillItem
+	for _, it := range req.Items {
+		if it.Amount <= 0 || !validCategories[it.Category] {
+			c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "项目数据无效"})
+			return
+		}
+		total += it.Amount
+		items = append(items, models.BillItem{
+			SessionID: session.ID,
+			Category:  it.Category,
+			Amount:    it.Amount,
+		})
 	}
 
-	// 校验日期
-	if update.Date.IsZero() {
-		update.Date = time.Now()
-	}
-
-	config.DB.Model(&bill).Updates(map[string]interface{}{
-		"amount":         update.Amount,
-		"category":       update.Category,
-		"date":           update.Date,
-		"note":           update.Note,
-		"activity_id":    update.ActivityID,
-		"activity_label": update.ActivityLabel,
+	// 事务：删旧明细 + 更新 session + 插新明细
+	tx := config.DB.Begin()
+	tx.Where("session_id = ?", session.ID).Delete(&models.BillItem{})
+	tx.Model(&session).Updates(map[string]interface{}{
+		"date":           req.Date,
+		"note":           req.Note,
+		"activity_id":    req.ActivityID,
+		"activity_label": req.ActivityLabel,
+		"total_amount":   total,
+		"item_count":     len(items),
 	})
+	for i := range items {
+		items[i].SessionID = session.ID
+	}
+	tx.Create(&items)
+	tx.Commit()
 
-	config.DB.Where("id = ?", id).First(&bill)
-	c.JSON(http.StatusOK, gin.H{"code": 0, "data": bill})
+	config.DB.Preload("Items").First(&session, session.ID)
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": toBillResp(session)})
 }
 
-// DeleteBill 删除账单
+// DeleteBill 删除记账记录
 func DeleteBill(c *gin.Context) {
 	openid := c.GetString("openid")
 	id := c.Param("id")
 
-	result := config.DB.Where("id = ? AND open_id = ?", id, openid).Delete(&models.Bill{})
+	tx := config.DB.Begin()
+	tx.Where("session_id = ?", id).Delete(&models.BillItem{})
+	result := tx.Where("id = ? AND open_id = ?", id, openid).Delete(&models.BillSession{})
+	tx.Commit()
+
 	if result.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "账单不存在"})
+		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "记录不存在"})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "已删除"})
 }
 
-// ListBills 账单列表（按月筛选）
+// ListBills 记账记录列表
 func ListBills(c *gin.Context) {
 	openid := c.GetString("openid")
-	month := c.Query("month") // 2026-08
+	month := c.Query("month")
 	pageSizeStr := c.DefaultQuery("pageSize", "50")
 	pageSize, _ := strconv.Atoi(pageSizeStr)
 	if pageSize <= 0 || pageSize > 200 {
@@ -150,14 +183,18 @@ func ListBills(c *gin.Context) {
 	}
 
 	var totalCount int64
-	query.Model(&models.Bill{}).Count(&totalCount)
+	query.Model(&models.BillSession{}).Count(&totalCount)
 
-	// 计算总金额
 	var totalAmount float64
-	query.Model(&models.Bill{}).Select("COALESCE(SUM(amount), 0)").Scan(&totalAmount)
+	query.Model(&models.BillSession{}).Select("COALESCE(SUM(total_amount), 0)").Scan(&totalAmount)
+
+	var sessions []models.BillSession
+	query.Preload("Items").Order("date DESC").Limit(pageSize).Find(&sessions)
 
 	var bills []models.Bill
-	query.Order("date DESC").Limit(pageSize).Find(&bills)
+	for _, s := range sessions {
+		bills = append(bills, toBillResp(s))
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
@@ -167,4 +204,28 @@ func ListBills(c *gin.Context) {
 			TotalAmount: totalAmount,
 		},
 	})
+}
+
+// toBillResp 将 BillSession 转为 Bill 响应格式（兼容前端）
+func toBillResp(s models.BillSession) models.Bill {
+	return models.Bill{
+		ID:            s.ID,
+		OpenID:        s.OpenID,
+		Amount:        s.TotalAmount,
+		Category:      firstCategory(s.Items),
+		Date:          s.Date,
+		Note:          s.Note,
+		ActivityID:    s.ActivityID,
+		ActivityLabel: s.ActivityLabel,
+		CreatedAt:     s.CreatedAt,
+		UpdatedAt:     s.UpdatedAt,
+		Items:         s.Items,
+	}
+}
+
+func firstCategory(items []models.BillItem) string {
+	if len(items) > 0 {
+		return items[0].Category
+	}
+	return ""
 }

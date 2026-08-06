@@ -1,28 +1,6 @@
-<!-- pages/bill-add/bill-add.wxml - 记账页面 -->
+<!-- pages/bill-add/bill-add.wxml - 多项目记账页面 -->
 <view class="page">
   <view class="card">
-    <!-- 金额输入 -->
-    <view class="amount-input-section">
-      <text class="currency">¥</text>
-      <input class="amount-input" type="digit" value="{{form.amount}}" bindinput="onInput" data-field="amount" placeholder="0.00" focus="{{!isEdit}}" />
-    </view>
-
-    <!-- 类别选择 -->
-    <view class="category-section">
-      <text class="form-section-title">开销类别</text>
-      <view class="category-grid">
-        <view 
-          class="category-item {{form.category === item.key ? 'active' : ''}}" 
-          wx:for="{{categories}}" 
-          wx:key="key"
-          bindtap="selectCategory" 
-          data-key="{{item.key}}">
-          <text class="category-icon">{{item.icon}}</text>
-          <text class="category-label">{{item.label}}</text>
-        </view>
-      </view>
-    </view>
-
     <!-- 日期 -->
     <view class="form-row">
       <text class="form-label">日期</text>
@@ -39,10 +17,41 @@
       </picker>
     </view>
 
+    <!-- 项目列表 -->
+    <view class="section-title">📋 开销明细</view>
+    <view class="item-list">
+      <view class="item-row" wx:for="{{form.items}}" wx:key="index">
+        <view class="item-header">
+          <picker class="item-category-picker" mode="selector" range="{{categories}}" range-key="label" bindchange="onItemCategoryChange" data-index="{{index}}">
+            <view class="category-chip {{item.category ? 'chip-' + item.category : ''}}">
+              {{item.categoryLabel || '选类别'}}
+            </view>
+          </picker>
+          <text class="item-delete" bindtap="removeItem" data-index="{{index}}" wx:if="{{form.items.length > 1}}">✕</text>
+        </view>
+        <view class="item-amount-row">
+          <text class="amount-sign">¥</text>
+          <input class="item-amount-input" type="digit" value="{{item.amount}}" bindinput="onItemAmount" data-index="{{index}}" placeholder="0.00" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 添加项目按钮 -->
+    <view class="add-item-btn" bindtap="addItem" wx:if="{{form.items.length < 8}}">
+      <text class="add-icon">+</text>
+      <text>添加项目</text>
+    </view>
+
+    <!-- 合计 -->
+    <view class="total-bar">
+      <text class="total-label">合计</text>
+      <text class="total-amount">¥{{totalAmount}}</text>
+    </view>
+
     <!-- 备注 -->
     <view class="form-row form-row-vertical">
       <text class="form-label">备注</text>
-      <textarea class="form-textarea" value="{{form.note}}" bindinput="onInput" data-field="note" placeholder="例如：两块场地 2小时，6人AA..." />
+      <textarea class="form-textarea" value="{{form.note}}" bindinput="onInput" data-field="note" placeholder="例如：周三固定局，6人AA..." />
     </view>
 
     <!-- 关联活动 -->

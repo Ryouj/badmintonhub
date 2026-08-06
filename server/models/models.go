@@ -27,21 +27,51 @@ type User struct {
 
 func (User) TableName() string { return "users" }
 
-// Bill 账单
-type Bill struct {
-	ID            uint      `gorm:"primaryKey" json:"id"`
-	OpenID        string    `gorm:"index;size:64;not null" json:"openid"`
-	Amount        float64   `gorm:"type:decimal(10,2);not null" json:"amount"`
-	Category      string    `gorm:"index;size:32;not null" json:"category"`
-	Date          time.Time `gorm:"index;not null" json:"date"`
-	Note          string    `gorm:"size:512" json:"note"`
-	ActivityID    uint      `json:"activityId"`
-	ActivityLabel string    `gorm:"size:128" json:"activityLabel"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+// BillSession 记账记录（一次记账可含多笔明细）
+type BillSession struct {
+	ID            uint       `gorm:"primaryKey" json:"id"`
+	OpenID        string     `gorm:"index;size:64;not null" json:"openid"`
+	Date          time.Time  `gorm:"index;not null" json:"date"`
+	Note          string     `gorm:"size:512" json:"note"`
+	ActivityID    uint       `json:"activityId"`
+	ActivityLabel string     `gorm:"size:128" json:"activityLabel"`
+	TotalAmount   float64    `gorm:"type:decimal(10,2);not null;default:0" json:"totalAmount"`
+	ItemCount     int        `gorm:"not null;default:0" json:"itemCount"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
+	Items         []BillItem `gorm:"foreignKey:SessionID" json:"items,omitempty"`
 }
 
-func (Bill) TableName() string { return "bills" }
+func (BillSession) TableName() string { return "bill_sessions" }
+
+// BillItem 账单明细（每笔明细对应一个消费类别）
+type BillItem struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	SessionID uint      `gorm:"index;not null" json:"sessionId"`
+	Category  string    `gorm:"size:32;not null" json:"category"`
+	Amount    float64   `gorm:"type:decimal(10,2);not null" json:"amount"`
+	Note      string    `gorm:"size:256" json:"note"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+func (BillItem) TableName() string { return "bill_items" }
+
+// Bill 保留兼容旧数据的别名（指向 bill_sessions）
+type Bill struct {
+	ID            uint       `gorm:"primaryKey" json:"id"`
+	OpenID        string     `gorm:"index;size:64;not null" json:"openid"`
+	Amount        float64    `gorm:"type:decimal(10,2);not null" json:"amount"`
+	Category      string     `gorm:"index;size:32;not null" json:"category"`
+	Date          time.Time  `gorm:"index;not null" json:"date"`
+	Note          string     `gorm:"size:512" json:"note"`
+	ActivityID    uint       `json:"activityId"`
+	ActivityLabel string     `gorm:"size:128" json:"activityLabel"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
+	Items         []BillItem `gorm:"-" json:"items,omitempty"`
+}
+
+func (Bill) TableName() string { return "bill_sessions" }
 
 // Activity 羽毛球活动
 type Activity struct {
@@ -92,7 +122,9 @@ type CategoryStat struct {
 }
 
 type LoginReq struct {
-	Code string `json:"code" binding:"required"`
+	Code      string `json:"code" binding:"required"`
+	NickName  string `json:"nickName"`
+	AvatarURL string `json:"avatarUrl"`
 }
 
 type LoginResp struct {
@@ -101,9 +133,23 @@ type LoginResp struct {
 }
 
 type BillListResp struct {
-	List       []Bill `json:"list"`
-	TotalCount int64  `json:"totalCount"`
+	List        []Bill `json:"list"`
+	TotalCount  int64  `json:"totalCount"`
 	TotalAmount float64 `json:"totalAmount"`
+}
+
+// CreateBillReq 创建账单请求（支持多项目）
+type CreateBillReq struct {
+	Date          time.Time         `json:"date"`
+	Note          string            `json:"note"`
+	ActivityID    uint              `json:"activityId"`
+	ActivityLabel string            `json:"activityLabel"`
+	Items         []CreateBillItem  `json:"items" binding:"required,min=1"`
+}
+
+type CreateBillItem struct {
+	Category string  `json:"category" binding:"required"`
+	Amount   float64 `json:"amount" binding:"required,gt=0"`
 }
 
 type ActivityListResp struct {

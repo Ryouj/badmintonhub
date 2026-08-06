@@ -20,6 +20,33 @@ Page({
     this.loadProfile();
   },
 
+  // 从微信同步头像昵称
+  async syncFromWx() {
+    const app = getApp();
+    try {
+      wx.showLoading({ title: '获取中...' });
+      const wxProfile = await app.syncWxProfile();
+      if (!wxProfile.nickName && !wxProfile.avatarUrl) {
+        wx.hideLoading();
+        wx.showToast({ title: '未获取到微信资料', icon: 'none' });
+        return;
+      }
+      // 更新到后端
+      const updated = await api.userAPI.updateProfile({
+        ...this.data.profile,
+        nickName: wxProfile.nickName || this.data.profile.nickName,
+        avatarUrl: wxProfile.avatarUrl || this.data.profile.avatarUrl
+      });
+      wx.hideLoading();
+      wx.showToast({ title: '同步成功', icon: 'success' });
+      getApp().globalData.userInfo = updated;
+      this.setData({ profile: updated });
+    } catch (err) {
+      wx.hideLoading();
+      console.error('同步失败:', err);
+    }
+  },
+
   async loadProfile() {
     const app = getApp();
     await app.ensureLogin();

@@ -18,15 +18,17 @@ func GetSummary(c *gin.Context) {
 	start, _ := getDateRange(period)
 	end := time.Now()
 
-	// 1. 账单汇总
+	// 1. 从 bill_items 汇总（关联 session 过滤 openid + 时间）
 	var totalAmount float64
 	var totalCount int64
-	config.DB.Model(&models.Bill{}).
-		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
-		Select("COALESCE(SUM(amount), 0)").
+	config.DB.Table("bill_items").
+		Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
+		Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, start, end).
+		Select("COALESCE(SUM(bill_items.amount), 0)").
 		Scan(&totalAmount)
-	config.DB.Model(&models.Bill{}).
-		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
+	config.DB.Table("bill_items").
+		Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
+		Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, start, end).
 		Count(&totalCount)
 
 	// 2. 活动汇总
@@ -47,10 +49,11 @@ func GetSummary(c *gin.Context) {
 
 	// 3. 类别拆分
 	var categoryData []models.CategoryBreakdown
-	config.DB.Model(&models.Bill{}).
-		Where("open_id = ? AND date BETWEEN ? AND ?", openid, start, end).
-		Select("category, SUM(amount) as amount").
-		Group("category").
+	config.DB.Table("bill_items").
+		Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
+		Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, start, end).
+		Select("bill_items.category, SUM(bill_items.amount) as amount").
+		Group("bill_items.category").
 		Scan(&categoryData)
 
 	// 4. 月度趋势（近12个月）
@@ -62,9 +65,10 @@ func GetSummary(c *gin.Context) {
 		mEnd := mStart.AddDate(0, 1, 0).Add(-time.Second)
 
 		var sum float64
-		config.DB.Model(&models.Bill{}).
-			Where("open_id = ? AND date BETWEEN ? AND ?", openid, mStart, mEnd).
-			Select("COALESCE(SUM(amount), 0)").
+		config.DB.Table("bill_items").
+			Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
+			Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, mStart, mEnd).
+			Select("COALESCE(SUM(bill_items.amount), 0)").
 			Scan(&sum)
 
 		monthlyTrend = append(monthlyTrend, models.MonthlyTrend{
@@ -86,14 +90,14 @@ func GetSummary(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"data": models.StatsSummary{
-			TotalAmount:    totalAmount,
-			TotalCount:     totalCount,
-			TotalDuration:  totalDuration / 60,
-			MaxDuration:    maxDuration,
-			ActivityCount:  activityCount,
-			CategoryData:   categoryData,
-			MonthlyTrend:   monthlyTrend,
-			TopVenues:      topVenues,
+			TotalAmount:   totalAmount,
+			TotalCount:    totalCount,
+			TotalDuration: totalDuration / 60,
+			MaxDuration:   maxDuration,
+			ActivityCount: activityCount,
+			CategoryData:  categoryData,
+			MonthlyTrend:  monthlyTrend,
+			TopVenues:     topVenues,
 		},
 	})
 }
