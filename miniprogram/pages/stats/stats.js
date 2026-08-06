@@ -71,84 +71,104 @@ Page({
     });
   },
 
-  // 饼图（同之前 Canvas 逻辑）
+  // 饼图 — 动态获取 canvas 实际尺寸后绘制
   drawPieChart(stats) {
-    const ctx = wx.createCanvasContext('pieChart', this);
-    const cx = 170, cy = 170, radius = 120;
-    const total = stats.reduce((s, i) => s + parseFloat(i.amount), 0);
+    const query = wx.createSelectorQuery().in(this);
+    query.select('#pieChart').boundingClientRect((rect) => {
+      const w = rect ? rect.width : 170;
+      const h = rect ? rect.height : 170;
+      const ctx = wx.createCanvasContext('pieChart', this);
+      const cx = w / 2, cy = h / 2;
+      const radius = Math.min(w, h) / 2 - 20;
+      const innerR = radius * 0.5;
+      const total = stats.reduce((s, i) => s + parseFloat(i.amount), 0);
 
-    let startAngle = -Math.PI / 2;
-    stats.forEach((item) => {
-      const sweep = total > 0 ? (parseFloat(item.amount) / total) * 2 * Math.PI : 0;
+      let startAngle = -Math.PI / 2;
+      stats.forEach((item) => {
+        const sweep = total > 0 ? (parseFloat(item.amount) / total) * 2 * Math.PI : 0;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, startAngle + sweep);
+        ctx.closePath();
+        ctx.setFillStyle(item.color);
+        ctx.fill();
+
+        if (sweep > 0.3) {
+          const mid = startAngle + sweep / 2;
+          const labelR = radius + 14;
+          ctx.setFillStyle('#666');
+          ctx.setFontSize(10);
+          ctx.setTextAlign('center');
+          ctx.setTextBaseline('middle');
+          ctx.fillText(item.percent + '%', cx + labelR * Math.cos(mid), cy + labelR * Math.sin(mid));
+        }
+        startAngle += sweep;
+      });
+
+      // 中心白圆
       ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, radius, startAngle, startAngle + sweep);
-      ctx.closePath();
-      ctx.setFillStyle(item.color);
+      ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
+      ctx.setFillStyle('#fff');
       ctx.fill();
 
-      if (sweep > 0.2) {
-        const mid = startAngle + sweep / 2;
-        ctx.setFillStyle('#333');
-        ctx.setFontSize(11);
-        ctx.setTextAlign('center');
-        ctx.fillText(item.percent + '%', cx + (radius + 30) * Math.cos(mid), cy + (radius + 30) * Math.sin(mid));
-      }
-      startAngle += sweep;
-    });
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, 60, 0, 2 * Math.PI);
-    ctx.setFillStyle('#fff');
-    ctx.fill();
-    ctx.setFillStyle('#333');
-    ctx.setFontSize(14);
-    ctx.setTextAlign('center');
-    ctx.fillText('总支出', cx, cy - 6);
-    ctx.setFillStyle('#e74c3c');
-    ctx.setFontSize(18);
-    ctx.fillText('¥' + total.toFixed(0), cx, cy + 18);
-    ctx.draw();
+      ctx.setFillStyle('#333');
+      ctx.setFontSize(11);
+      ctx.setTextAlign('center');
+      ctx.setTextBaseline('middle');
+      ctx.fillText('总支出', cx, cy - 8);
+      ctx.setFillStyle('#e74c3c');
+      ctx.setFontSize(15);
+      ctx.fillText('¥' + total.toFixed(0), cx, cy + 12);
+      ctx.draw();
+    }).exec();
   },
 
-  // 柱状图
+  // 柱状图 — 动态获取 canvas 实际尺寸
   drawBarChart(trend) {
     if (!trend || trend.length === 0) return;
-    const ctx = wx.createCanvasContext('barChart', this);
-    const width = 650, height = 360;
-    const pad = { top: 40, right: 20, bottom: 50, left: 60 };
-    const cw = width - pad.left - pad.right, ch = height - pad.top - pad.bottom;
+    const query = wx.createSelectorQuery().in(this);
+    query.select('#barChart').boundingClientRect((rect) => {
+      const width = rect ? rect.width : 320;
+      const height = rect ? rect.height : 180;
+      const ctx = wx.createCanvasContext('barChart', this);
+      const pad = { top: 20, right: 16, bottom: 36, left: 48 };
+      const cw = width - pad.left - pad.right, ch = height - pad.top - pad.bottom;
 
-    ctx.setFillStyle('#fff');
-    ctx.fillRect(0, 0, width, height);
+      ctx.setFillStyle('#fff');
+      ctx.fillRect(0, 0, width, height);
 
-    const maxVal = Math.max(...trend.map(t => t.amount), 1);
-    const barW = Math.min(40, cw / trend.length - 12);
+      const maxVal = Math.max(...trend.map(t => t.amount), 1);
+      const barW = Math.min(32, cw / trend.length - 8);
 
-    for (let i = 0; i <= 4; i++) {
-      const y = pad.top + (ch / 4) * i;
-      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(width - pad.right, y);
-      ctx.setStrokeStyle('#f0f0f0'); ctx.setLineWidth(1); ctx.stroke();
-      ctx.setFillStyle('#999'); ctx.setFontSize(11); ctx.setTextAlign('right');
-      ctx.fillText('¥' + Math.round(maxVal * (4 - i) / 4), pad.left - 8, y + 4);
-    }
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (ch / 4) * i;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(width - pad.right, y);
+        ctx.setStrokeStyle('#f0f0f0'); ctx.setLineWidth(1); ctx.stroke();
+        ctx.setFillStyle('#999'); ctx.setFontSize(9); ctx.setTextAlign('right');
+        ctx.setTextBaseline('middle');
+        ctx.fillText('¥' + Math.round(maxVal * (4 - i) / 4), pad.left - 6, y);
+      }
 
-    trend.forEach((item, idx) => {
-      const x = pad.left + (cw / trend.length) * idx + (cw / trend.length - barW) / 2;
-      const barH = (item.amount / maxVal) * ch;
-      const y = pad.top + ch - barH;
-      ctx.setFillStyle('#1aad19');
-      ctx.fillRect(x, y, barW, barH);
-      ctx.setFillStyle('#333'); ctx.setFontSize(10); ctx.setTextAlign('center');
-      ctx.fillText('¥' + item.amount, x + barW / 2, y - 6);
-      ctx.setFillStyle('#999');
-      ctx.fillText(item.month, x + barW / 2, pad.top + ch + 24);
-    });
+      trend.forEach((item, idx) => {
+        const slot = cw / trend.length;
+        const x = pad.left + slot * idx + (slot - barW) / 2;
+        const barH = (item.amount / maxVal) * ch;
+        const y = pad.top + ch - barH;
+        ctx.setFillStyle('#1aad19');
+        ctx.fillRect(x, y, barW, barH);
+        ctx.setFillStyle('#333'); ctx.setFontSize(9); ctx.setTextAlign('center');
+        ctx.setTextBaseline('bottom');
+        ctx.fillText('¥' + item.amount, x + barW / 2, y - 4);
+        ctx.setFillStyle('#999');
+        ctx.setTextBaseline('top');
+        ctx.fillText(item.month, x + barW / 2, pad.top + ch + 8);
+      });
 
-    ctx.beginPath();
-    ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top + ch);
-    ctx.lineTo(width - pad.right, pad.top + ch);
-    ctx.setStrokeStyle('#ccc'); ctx.setLineWidth(1); ctx.stroke();
-    ctx.draw();
+      ctx.beginPath();
+      ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top + ch);
+      ctx.lineTo(width - pad.right, pad.top + ch);
+      ctx.setStrokeStyle('#ccc'); ctx.setLineWidth(1); ctx.stroke();
+      ctx.draw();
+    }).exec();
   }
 });

@@ -5,6 +5,7 @@ const BILL_CATEGORIES = [
   { key: 'court',     label: '场地费', icon: '🏟️', color: '#e74c3c' },
   { key: 'shuttle',   label: '球费',   icon: '🏸', color: '#f39c12' },
   { key: 'drink',     label: '饮料',   icon: '🥤', color: '#3498db' },
+  { key: 'transport', label: '交通费', icon: '🚗', color: '#2ecc71' },
   { key: 'stringing', label: '绑线',   icon: '🧵', color: '#9b59b6' },
   { key: 'equipment', label: '装备',   icon: '👟', color: '#1abc9c' },
   { key: 'other',     label: '其他',   icon: '📋', color: '#7f8c8d' }

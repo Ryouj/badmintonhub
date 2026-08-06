@@ -57,6 +57,7 @@
 .sub-dot.chip-court     { background: #e74c3c; }
 .sub-dot.chip-shuttle   { background: #f39c12; }
 .sub-dot.chip-drink     { background: #3498db; }
+.sub-dot.chip-transport { background: #2ecc71; }
 .sub-dot.chip-stringing { background: #9b59b6; }
 .sub-dot.chip-equipment { background: #1abc9c; }
 .sub-dot.chip-other     { background: #7f8c8d; }

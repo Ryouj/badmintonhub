@@ -12,7 +12,7 @@ import (
 )
 
 var validCategories = map[string]bool{
-	"court": true, "shuttle": true, "drink": true,
+	"court": true, "shuttle": true, "drink": true, "transport": true,
 	"stringing": true, "equipment": true, "other": true,
 }
 

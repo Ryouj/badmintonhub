@@ -93,10 +93,10 @@
 .dot-court .item-dot, .item-dot.dot-court { background: #e74c3c; }
 .dot-shuttle .item-dot, .item-dot.dot-shuttle { background: #f39c12; }
 .dot-drink .item-dot, .item-dot.dot-drink { background: #3498db; }
-.dot-traffic .item-dot, .item-dot.dot-traffic { background: #9b59b6; }
+.dot-transport .item-dot, .item-dot.dot-transport { background: #2ecc71; }
+.dot-stringing .item-dot, .item-dot.dot-stringing { background: #9b59b6; }
 .dot-equipment .item-dot, .item-dot.dot-equipment { background: #1abc9c; }
-.dot-string .item-dot, .item-dot.dot-string { background: #e67e22; }
-.dot-other .item-dot, .item-dot.dot-other { background: #95a5a6; }
+.dot-other .item-dot, .item-dot.dot-other { background: #7f8c8d; }
 
 .item-label {
   flex: 1;
