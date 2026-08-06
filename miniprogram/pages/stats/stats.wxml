@@ -89,5 +89,5 @@
       <text class="venue-count">{{item.count}}次</text>
     </view>
   </view>
-</view>
 </block>
+</view>
