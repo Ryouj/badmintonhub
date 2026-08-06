@@ -1,12 +1,28 @@
-// pages/profile/profile.js
+// pages/profile/profile.js - 卡片独立编辑
 const api = require('../../utils/api');
 const { SKILL_LEVELS, PLAY_FREQUENCY, PLAY_YEARS, PLAY_STYLES, PLAY_TYPES, HANDS } = require('../../utils/constants');
+
+// 各编辑区域的字段映射
+const SECTION_FIELDS = {
+  basic:      ['nickName', 'bio'],
+  skill:      ['skillLevel', 'playYears', 'playFrequency', 'playStyle'],
+  equipment:  ['mainRacket', 'shoes', 'shuttleBrand', 'stringTension'],
+  preference: ['preferredVenue', 'city', 'playType', 'hand']
+};
+
+// picker 字段配置
+const PICKER_CONFIG = {
+  skillLevel:    { list: SKILL_LEVELS, labelField: 'skillLevelLabel', labelKey: 'label' },
+  playYears:     { list: PLAY_YEARS, labelField: 'playYearsLabel', labelKey: 'label' },
+  playFrequency: { list: PLAY_FREQUENCY, labelField: 'playFrequencyLabel', labelKey: 'label' },
+  playStyle:     { list: PLAY_STYLES, labelField: 'playStyleLabel', labelKey: 'label' }
+};
 
 Page({
   data: {
     profile: {},
     totalData: {},
-    showEdit: false,
+    editingSection: null,
     editForm: {},
     skillLevelOptions: SKILL_LEVELS,
     playFrequencyOptions: PLAY_FREQUENCY,
@@ -53,74 +69,138 @@ Page({
 
   getLabel(list, key) {
     if (!key) return '';
-    const item = list.find(i => i.key === key);
+    const item = list.find(function (i) { return i.key === key; });
     return item ? item.label : key;
   },
 
-  startEdit() {
-    this.setData({ showEdit: true, editForm: { ...this.data.profile } });
+  // 切换某张卡片的编辑状态
+  toggleEdit(e) {
+    var section = e.currentTarget.dataset.section;
+    var form = {};
+    if (section === 'basic') {
+      form.nickName = this.data.profile.nickName || '';
+      form.bio = this.data.profile.bio || '';
+    } else {
+      // 复制 profile 和标签字段
+      var profile = this.data.profile;
+      var fields = SECTION_FIELDS[section];
+      fields.forEach(function (f) {
+        form[f] = profile[f];
+      });
+      // 复制对应的标签字段
+      if (section === 'skill') {
+        form.skillLevelLabel = profile.skillLevelLabel;
+        form.playYearsLabel = profile.playYearsLabel;
+        form.playFrequencyLabel = profile.playFrequencyLabel;
+        form.playStyleLabel = profile.playStyleLabel;
+      }
+    }
+    this.setData({ editingSection: section, editForm: form });
   },
 
+  // 取消编辑
   cancelEdit() {
-    this.setData({ showEdit: false });
+    this.setData({ editingSection: null, editForm: {} });
   },
 
+  // 输入框变化
   onFieldChange(e) {
-    const field = e.currentTarget.dataset.field;
-    let value = e.detail.value;
-    // stringTension 在后端是 int，前端输入框返回字符串，需转换
+    var field = e.currentTarget.dataset.field;
+    var value = e.detail.value;
     if (field === 'stringTension') {
       value = parseInt(value) || 0;
     }
     this.setData({ ['editForm.' + field]: value });
   },
 
+  // picker 变化
   onPickerChange(e) {
-    const field = e.currentTarget.dataset.field;
-    const idx = e.detail.value;
-    const optionsMap = {
-      skillLevel:    { list: SKILL_LEVELS,    labelField: 'skillLevelLabel' },
-      playFrequency: { list: PLAY_FREQUENCY,  labelField: 'playFrequencyLabel' },
-      playYears:     { list: PLAY_YEARS,      labelField: 'playYearsLabel' },
-      playStyle:     { list: PLAY_STYLES,     labelField: 'playStyleLabel' }
-    };
-
-    const config = optionsMap[field];
-    if (config && config.list) {
-      const item = config.list[idx];
-      this.setData({
-        ['editForm.' + field]: item.key,
-        ['editForm.' + config.labelField]: item.label
-      });
+    var field = e.currentTarget.dataset.field;
+    var idx = e.detail.value;
+    var cfg = PICKER_CONFIG[field];
+    if (cfg) {
+      var item = cfg.list[idx];
+      var update = {};
+      update['editForm.' + field] = item.key;
+      update['editForm.' + cfg.labelField] = item.label;
+      this.setData(update);
     } else {
-      const list = field === 'playType' ? this.data.playTypes : this.data.hands;
+      // playType / hand
+      var list = field === 'playType' ? this.data.playTypes : this.data.hands;
       this.setData({ ['editForm.' + field]: list[idx] });
     }
   },
 
-  async saveProfile() {
-    const form = this.data.editForm;
-    if (!form.nickName) {
+  // 保存某张卡片
+  async saveSection(e) {
+    var section = e.currentTarget.dataset.section;
+    var form = this.data.editForm;
+    var fields = SECTION_FIELDS[section];
+    var labels = this.getLabelFields(section);
+
+    if (section === 'basic' && !form.nickName) {
       wx.showToast({ title: '请填写昵称', icon: 'none' });
       return;
     }
 
-    // 过滤前端显示用的标签字段，只保留后端需要的字段
-    const payload = {};
-    const fields = ['nickName','bio','avatarUrl','skillLevel','playYears','playFrequency',
-      'playStyle','playType','hand','mainRacket','shoes','shuttleBrand','stringTension',
-      'preferredVenue','city'];
-    fields.forEach(k => { if (form[k] !== undefined) payload[k] = form[k]; });
+    // 构建 payload
+    var payload = {};
+    fields.forEach(function (f) {
+      if (form[f] !== undefined) payload[f] = form[f];
+    });
 
     wx.showLoading({ title: '保存中...' });
     try {
-      const updated = await api.userAPI.updateProfile(payload);
+      var updated = await api.userAPI.updateProfile(payload);
+
+      // 刷新显示数据
+      var profile = Object.assign({}, this.data.profile);
+      fields.forEach(function (f) {
+        if (updated[f] !== undefined) profile[f] = updated[f];
+      });
+      // 更新标签显示
+      labels.forEach(function (l) {
+        profile[l.key] = updated[l.key] !== undefined ? updated[l.key] : form[l.key];
+        profile[l.label] = l.compute ? l.compute(profile[l.key]) : form[l.label];
+      });
+
       wx.showToast({ title: '保存成功', icon: 'success' });
-      this.setData({ showEdit: false, profile: updated });
-      getApp().globalData.userInfo = updated;
+      this.setData({ editingSection: null, editForm: {}, profile: profile });
+      getApp().globalData.userInfo = profile;
     } catch (err) {
       wx.showToast({ title: '保存失败', icon: 'none' });
+      console.error('保存失败:', err);
     }
     wx.hideLoading();
+  },
+
+  // 获取各 section 需要刷新的标签字段
+  getLabelFields(section) {
+    if (section === 'skill') {
+      return [
+        { key: 'skillLevel', label: 'skillLevelLabel', compute: this.computeSkillLevel },
+        { key: 'playYears', label: 'playYearsLabel', compute: this.computePlayYears },
+        { key: 'playFrequency', label: 'playFrequencyLabel', compute: this.computePlayFrequency },
+        { key: 'playStyle', label: 'playStyleLabel', compute: this.computePlayStyle }
+      ];
+    }
+    return [];
+  },
+
+  computeSkillLevel: function (val) {
+    var item = SKILL_LEVELS.find(function (i) { return i.key === val; });
+    return item ? item.label : val;
+  },
+  computePlayYears: function (val) {
+    var item = PLAY_YEARS.find(function (i) { return i.key === val; });
+    return item ? item.label : val;
+  },
+  computePlayFrequency: function (val) {
+    var item = PLAY_FREQUENCY.find(function (i) { return i.key === val; });
+    return item ? item.label : val;
+  },
+  computePlayStyle: function (val) {
+    var item = PLAY_STYLES.find(function (i) { return i.key === val; });
+    return item ? item.label : val;
   }
 });
