@@ -100,14 +100,19 @@ Page({
     this.calcTotal();
   },
 
-  onItemCategoryChange(e) {
-    const idx = e.currentTarget.dataset.index;
-    const catIdx = e.detail.value;
-    const cat = BILL_CATEGORIES[catIdx];
+  onItemCategoryTap(e) {
+    const { index, catKey, catLabel } = e.currentTarget.dataset;
     this.setData({
-      ['form.items[' + idx + '].category']: cat.key,
-      ['form.items[' + idx + '].categoryLabel']: cat.label
+      ['form.items[' + index + '].category']: catKey,
+      ['form.items[' + index + '].categoryLabel']: catLabel
     });
+  },
+
+  quickAddItem(e) {
+    if (this.data.form.items.length >= 8) return;
+    const { catKey, catLabel } = e.currentTarget.dataset;
+    const items = [...this.data.form.items, { category: catKey, categoryLabel: catLabel, amount: '' }];
+    this.setData({ 'form.items': items });
   },
 
   onItemAmount(e) {

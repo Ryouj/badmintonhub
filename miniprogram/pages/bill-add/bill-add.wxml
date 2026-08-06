@@ -17,17 +17,26 @@
       </picker>
     </view>
 
-    <!-- 项目列表 -->
+    <!-- 开销明细 -->
     <view class="section-title">📋 开销明细</view>
     <view class="item-list">
       <view class="item-row" wx:for="{{form.items}}" wx:key="index">
         <view class="item-header">
-          <picker class="item-category-picker" mode="selector" range="{{categories}}" range-key="label" bindchange="onItemCategoryChange" data-index="{{index}}">
-            <view class="category-chip {{item.category ? 'chip-' + item.category : ''}}">
-              {{item.categoryLabel || '选类别'}}
-            </view>
-          </picker>
           <text class="item-delete" bindtap="removeItem" data-index="{{index}}" wx:if="{{form.items.length > 1}}">✕</text>
+        </view>
+        <view class="chip-select-row">
+          <view 
+            class="chip-select {{item.category === cat.key ? 'chip-' + cat.key + ' selected' : ''}}" 
+            wx:for="{{categories}}" 
+            wx:for-item="cat" 
+            wx:key="key"
+            bindtap="onItemCategoryTap" 
+            data-index="{{index}}" 
+            data-cat-key="{{cat.key}}" 
+            data-cat-label="{{cat.label}}"
+          >
+            {{cat.icon}} {{cat.label}}
+          </view>
         </view>
         <view class="item-amount-row">
           <text class="amount-sign">¥</text>
@@ -36,10 +45,22 @@
       </view>
     </view>
 
-    <!-- 添加项目按钮 -->
-    <view class="add-item-btn" bindtap="addItem" wx:if="{{form.items.length < 8}}">
-      <text class="add-icon">+</text>
-      <text>添加项目</text>
+    <!-- 快捷添加类别 -->
+    <view class="quick-add-section" wx:if="{{form.items.length < 8}}">
+      <text class="quick-add-label">点击类别快速添加：</text>
+      <view class="quick-chip-row">
+        <view 
+          class="quick-chip {{cat.key}}" 
+          wx:for="{{categories}}" 
+          wx:for-item="cat" 
+          wx:key="key" 
+          bindtap="quickAddItem" 
+          data-cat-key="{{cat.key}}" 
+          data-cat-label="{{cat.label}}"
+        >
+          {{cat.icon}} {{cat.label}}
+        </view>
+      </view>
     </view>
 
     <!-- 合计 -->
