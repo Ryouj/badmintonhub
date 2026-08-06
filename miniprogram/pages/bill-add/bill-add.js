@@ -1,4 +1,4 @@
-// pages/bill-add/bill-add.js - 多项目记账
+// pages/bill-add/bill-add.js - 记账+活动（合并页）
 const api = require('../../utils/api');
 const { BILL_CATEGORIES } = require('../../utils/constants');
 const util = require('../../utils/util');
@@ -8,15 +8,17 @@ Page({
     isEdit: false,
     editId: null,
     categories: BILL_CATEGORIES,
-    activityLabels: [],
-    activityMap: [],
     totalAmount: '0.00',
     form: {
       date: '',
       time: '',
       note: '',
-      activityId: 0,
-      activityLabel: '',
+      // 活动字段
+      durationHours: '',
+      durationMinutes: '',
+      location: '',
+      playerCount: '',
+      // 账单项目
       items: [
         { category: '', categoryLabel: '', amount: '' }
       ]
@@ -32,10 +34,9 @@ Page({
 
     if (options.id) {
       this.setData({ isEdit: true, editId: options.id });
+      wx.setNavigationBarTitle({ title: '编辑记录' });
       this.loadBill(options.id);
     }
-
-    this.loadActivities();
   },
 
   // 加载已有记录（编辑模式）
@@ -50,35 +51,30 @@ Page({
       if (items.length === 0) {
         items.push({ category: '', categoryLabel: '', amount: '' });
       }
+      // 如果有关联活动，加载活动信息
+      let actFields = { durationHours: '', durationMinutes: '', location: '', playerCount: '' };
+      if (bill.activityId) {
+        try {
+          const act = await api.activityAPI.get(bill.activityId);
+          const dur = act.duration || act.Activity?.duration || 0;
+          actFields = {
+            durationHours: String(Math.floor(dur / 60)),
+            durationMinutes: String(dur % 60),
+            location: act.location || act.Activity?.location || '',
+            playerCount: (act.playerCount || act.Activity?.playerCount) ? String(act.playerCount || act.Activity?.playerCount) : ''
+          };
+        } catch (e) { /* 活动不存在则忽略 */ }
+      }
       this.setData({
         'form.date': util.formatDate(bill.date, 'YYYY-MM-DD'),
         'form.time': util.formatDate(bill.date, 'HH:mm'),
         'form.note': bill.note || '',
-        'form.activityId': bill.activityId || 0,
-        'form.activityLabel': bill.activityLabel || '',
-        'form.items': items
+        'form.items': items,
+        ...Object.fromEntries(Object.entries(actFields).map(([k, v]) => ['form.' + k, v]))
       });
       this.calcTotal();
     } catch (err) {
       console.error('加载记录失败:', err);
-    }
-  },
-
-  // 加载活动列表
-  async loadActivities() {
-    try {
-      const data = await api.activityAPI.list();
-      const list = data.list || [];
-      const labels = ['不关联'];
-      const map = [{ id: 0, label: '' }];
-      list.forEach(a => {
-        const label = util.formatDate(a.date, 'MM/DD') + ' ' + (a.location || '未命名');
-        labels.push(label);
-        map.push({ id: a.id, label: a.location || '未命名' });
-      });
-      this.setData({ activityLabels: labels, activityMap: map });
-    } catch (err) {
-      // 活动列表加载失败不影响记账
     }
   },
 
@@ -138,52 +134,82 @@ Page({
     this.setData({ ['form.' + field]: e.detail.value });
   },
 
-  onActivityChange(e) {
-    const idx = parseInt(e.detail.value);
-    if (idx === 0) {
-      this.setData({ 'form.activityId': 0, 'form.activityLabel': '' });
-    } else {
-      const map = this.data.activityMap[idx] || {};
-      this.setData({ 'form.activityId': map.id, 'form.activityLabel': map.label });
-    }
-  },
-
   // 提交
   async submitBill() {
     const form = this.data.form;
 
-    // 校验
-    const validItems = form.items.filter(it => it.category && it.amount && parseFloat(it.amount) > 0);
-    if (validItems.length === 0) {
-      wx.showToast({ title: '请至少添加一个有效项目', icon: 'none' });
+    // --- 校验活动信息 ---
+    const durH = parseInt(form.durationHours) || 0;
+    const durM = parseInt(form.durationMinutes) || 0;
+    const totalDuration = durH * 60 + durM;
+    const hasActivity = totalDuration > 0;
+    if (hasActivity && totalDuration > 1440) {
+      wx.showToast({ title: '运动时长不能超过24小时', icon: 'none' }); return;
+    }
+
+    // --- 校验账单 ---
+    const hasBillItems = form.items.some(it => it.category && it.amount && parseFloat(it.amount) > 0);
+    if (!hasActivity && !hasBillItems) {
+      wx.showToast({ title: '请填写活动信息或消费明细', icon: 'none' });
       return;
     }
 
-    const date = form.date + 'T' + (form.time || '00:00') + ':00+08:00';
-    const body = {
-      date,
-      note: form.note,
-      activityId: form.activityId || 0,
-      activityLabel: form.activityLabel || '',
-      items: validItems.map(it => ({
-        category: it.category,
-        amount: parseFloat(it.amount)
-      }))
-    };
-
     wx.showLoading({ title: '保存中...' });
     try {
-      if (this.data.isEdit) {
-        await api.billAPI.update(this.data.editId, body);
-      } else {
-        await api.billAPI.create(body);
+      let activityId = 0;
+      let activityLabel = '';
+
+      // 先创建活动（如果有）
+      if (hasActivity) {
+        const actPayload = {
+          date: form.date + 'T00:00:00+08:00',
+          duration: totalDuration,
+          location: form.location || '',
+          playerCount: parseInt(form.playerCount) || 0
+        };
+        if (!this.data.isEdit) {
+          const actRes = await api.activityAPI.create(actPayload);
+          activityId = actRes.id || actRes.Activity?.id || 0;
+          activityLabel = form.location || '';
+        } else {
+          // 编辑模式：更新关联的活动
+          const bill = await api.billAPI.get(this.data.editId);
+          if (bill.activityId) {
+            await api.activityAPI.update(bill.activityId, actPayload);
+            activityId = bill.activityId;
+            activityLabel = form.location || '';
+          } else {
+            const actRes = await api.activityAPI.create(actPayload);
+            activityId = actRes.id || actRes.Activity?.id || 0;
+            activityLabel = form.location || '';
+          }
+        }
       }
+
+      // 创建/更新账单
+      if (hasBillItems) {
+        const validItems = form.items
+          .filter(it => it.category && it.amount && parseFloat(it.amount) > 0)
+          .map(it => ({ category: it.category, amount: parseFloat(it.amount) }));
+        const date = form.date + 'T' + (form.time || '00:00') + ':00+08:00';
+        const body = { date, note: form.note, activityId, activityLabel, items: validItems };
+
+        if (this.data.isEdit) {
+          await api.billAPI.update(this.data.editId, body);
+        } else {
+          await api.billAPI.create(body);
+        }
+      } else if (this.data.isEdit) {
+        // 编辑模式但没有账单项目 → 删除账单（只保留活动）
+        await api.billAPI.delete(this.data.editId);
+      }
+
       wx.hideLoading();
       wx.showToast({ title: '保存成功', icon: 'success' });
       setTimeout(() => wx.navigateBack(), 1000);
     } catch (err) {
       wx.hideLoading();
-      wx.showToast({ title: '保存失败', icon: 'none' });
+      wx.showToast({ title: '保存失败: ' + (err.message || '请重试'), icon: 'none' });
     }
   },
 

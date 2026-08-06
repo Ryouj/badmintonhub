@@ -17,8 +17,34 @@
       </picker>
     </view>
 
+    <!-- 活动信息（选填） -->
+    <view class="section-title section-act-title">
+      <text>🏸 活动信息</text>
+      <text class="section-sub">选填</text>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">运动时长</text>
+      <view class="duration-inputs">
+        <input class="duration-input" type="number" value="{{form.durationHours}}" bindinput="onInput" data-field="durationHours" placeholder="0" />
+        <text class="duration-sep">小时</text>
+        <input class="duration-input" type="number" value="{{form.durationMinutes}}" bindinput="onInput" data-field="durationMinutes" placeholder="0" />
+        <text class="duration-sep">分钟</text>
+      </view>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">球馆</text>
+      <input class="form-input-inline" value="{{form.location}}" bindinput="onInput" data-field="location" placeholder="如：XX羽毛球馆" />
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">参与人数</text>
+      <input class="form-input-inline" type="number" value="{{form.playerCount}}" bindinput="onInput" data-field="playerCount" placeholder="如：4" />
+    </view>
+
     <!-- 开销明细 -->
-    <view class="section-title">📋 开销明细</view>
+    <view class="section-title">💰 消费明细</view>
     <view class="item-list">
       <view class="item-row" wx:for="{{form.items}}" wx:key="index">
         <view class="item-header">
@@ -75,13 +101,6 @@
       <textarea class="form-textarea" value="{{form.note}}" bindinput="onInput" data-field="note" placeholder="例如：周三固定局，6人AA..." />
     </view>
 
-    <!-- 关联活动 -->
-    <view class="form-row">
-      <text class="form-label">关联活动</text>
-      <picker mode="selector" range="{{activityLabels}}" bindchange="onActivityChange">
-        <view class="form-picker">{{form.activityLabel || '不关联（可选）'}}</view>
-      </picker>
-    </view>
   </view>
 
   <!-- 提交 -->

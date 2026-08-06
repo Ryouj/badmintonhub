@@ -80,7 +80,6 @@ Page({
 
   goProfile() { wx.switchTab({ url: '/pages/profile/profile' }); },
   goAddBill() { wx.navigateTo({ url: '/pages/bill-add/bill-add' }); },
-  goAddActivity() { wx.navigateTo({ url: '/pages/activity/activity' }); },
   goActivityList() { wx.navigateTo({ url: '/pages/activity-list/activity-list' }); },
   goStats() { wx.switchTab({ url: '/pages/stats/stats' }); },
   goBills() { wx.switchTab({ url: '/pages/bills/bills' }); },

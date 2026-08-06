@@ -34,12 +34,8 @@
   <!-- 快捷入口 -->
   <view class="quick-actions">
     <view class="action-item" bindtap="goAddBill">
-      <view class="action-icon action-icon-bill">💰</view>
+      <view class="action-icon action-icon-bill">🏸</view>
       <text class="action-label">记一笔</text>
-    </view>
-    <view class="action-item" bindtap="goAddActivity">
-      <view class="action-icon action-icon-play">🏸</view>
-      <text class="action-label">记活动</text>
     </view>
     <view class="action-item" bindtap="goStats">
       <view class="action-icon action-icon-chart">📊</view>
