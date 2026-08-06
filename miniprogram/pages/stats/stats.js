@@ -37,17 +37,21 @@ Page({
           avgDuration: data.activityCount > 0 ? Math.round(data.totalDuration * 60 / data.activityCount) : 0,
           maxDuration: data.maxDuration || 0
         },
+        isEmpty: !data.totalAmount && !data.totalCount && !data.activityCount,
         categoryStats,
         monthlyTrend,
         topVenues
       });
 
-      setTimeout(() => {
-        this.drawPieChart(categoryStats);
-        this.drawBarChart(monthlyTrend);
-      }, 300);
+      if (!this.data.isEmpty) {
+        setTimeout(() => {
+          this.drawPieChart(categoryStats);
+          this.drawBarChart(monthlyTrend);
+        }, 300);
+      }
     } catch (err) {
       console.error('统计失败:', err);
+      wx.showToast({ title: '加载失败，下拉刷新重试', icon: 'none' });
     }
     wx.hideLoading();
   },

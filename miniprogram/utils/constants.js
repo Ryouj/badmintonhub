@@ -46,10 +46,28 @@ const PLAY_STYLES = [
   { key: 'compete',  label: '比赛竞技' }
 ];
 
+// 擅长打法（个人档案页用）
+const PLAY_TYPES = ['拉吊突击', '防守反击', '进攻杀球', '控网抢攻', '四方球', '混合型'];
+
+// 惯用手（个人档案页用）
+const HANDS = ['右手', '左手'];
+
+// 统一文案
+const LABELS = {
+  NOT_SET: '未设置',
+  PLEASE_SELECT: '请选择',
+  NO_RECORD: '未记录',
+  LOAD_FAILED: '加载失败',
+  NETWORK_ERROR: '网络错误'
+};
+
 module.exports = {
   BILL_CATEGORIES,
   SKILL_LEVELS,
   PLAY_FREQUENCY,
   PLAY_YEARS,
-  PLAY_STYLES
+  PLAY_STYLES,
+  PLAY_TYPES,
+  HANDS,
+  LABELS
 };

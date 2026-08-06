@@ -136,14 +136,34 @@ func ListActivities(c *gin.Context) {
 		Limit(pageSize).
 		Find(&activities)
 
-	// 关联账单数量
+	// 批量查账单数量（消除 N+1）
+	type billCountRow struct {
+		ActivityID uint  `gorm:"column:activity_id"`
+		Count      int64 `gorm:"column:cnt"`
+	}
+	var billCounts []billCountRow
+	config.DB.Model(&models.Bill{}).
+		Select("activity_id, COUNT(*) as cnt").
+		Where("activity_id IN ?", func() []uint {
+			ids := make([]uint, len(activities))
+			for i, a := range activities {
+				ids[i] = a.ID
+			}
+			return ids
+		}()).
+		Group("activity_id").
+		Scan(&billCounts)
+
+	countMap := make(map[uint]int64)
+	for _, bc := range billCounts {
+		countMap[bc.ActivityID] = bc.Count
+	}
+
 	var result []models.ActivityWithBills
 	for _, a := range activities {
-		var count int64
-		config.DB.Model(&models.Bill{}).Where("activity_id = ?", a.ID).Count(&count)
 		result = append(result, models.ActivityWithBills{
 			Activity:  a,
-			BillCount: count,
+			BillCount: countMap[a.ID],
 		})
 	}
 

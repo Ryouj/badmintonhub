@@ -1,0 +1,43 @@
+<!-- pages/bill-detail/bill-detail.wxml -->
+<view class="page">
+  <!-- 头部总额 -->
+  <view class="total-header">
+    <text class="total-label">合计消费</text>
+    <text class="total-amount">¥{{session.totalAmount || 0}}</text>
+    <text class="total-count">{{items.length}} 个项目</text>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="card info-card">
+    <view class="info-row">
+      <text class="info-label">日期</text>
+      <text class="info-value">{{dateText}}</text>
+    </view>
+    <view class="info-row" wx:if="{{activityLabel}}">
+      <text class="info-label">关联活动</text>
+      <text class="info-value">{{activityLabel}}</text>
+    </view>
+    <view class="info-row" wx:if="{{session.note}}">
+      <text class="info-label">备注</text>
+      <text class="info-value">{{session.note}}</text>
+    </view>
+  </view>
+
+  <!-- 费用明细 -->
+  <view class="card">
+    <text class="section-title">💳 费用明细</text>
+    <view class="item-list">
+      <view class="item-row" wx:for="{{items}}" wx:key="id">
+        <text class="item-dot dot-{{item.category}}"></text>
+        <text class="item-label">{{item.categoryLabel}}</text>
+        <text class="item-amount">¥{{item.amount}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-bar">
+    <button class="btn-edit" bindtap="goEdit">✏️ 编辑</button>
+    <button class="btn-delete" bindtap="deleteBill">🗑 删除</button>
+  </view>
+</view>

@@ -1,0 +1,145 @@
+/* pages/bill-detail/bill-detail.wxss */
+.page {
+  padding-bottom: 120rpx;
+}
+
+/* 总额头部 */
+.total-header {
+  background: linear-gradient(135deg, #1aad19, #0d8a0d);
+  padding: 40rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.total-label {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.7);
+}
+
+.total-amount {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #fff;
+  margin: 8rpx 0;
+}
+
+.total-count {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.6);
+}
+
+/* 信息卡片 */
+.card {
+  background: #fff;
+  margin: 0 20rpx 16rpx;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  max-width: 60%;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* 费用明细列表 */
+.item-row {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.dot-court .item-dot, .item-dot.dot-court { background: #e74c3c; }
+.dot-shuttle .item-dot, .item-dot.dot-shuttle { background: #f39c12; }
+.dot-drink .item-dot, .item-dot.dot-drink { background: #3498db; }
+.dot-traffic .item-dot, .item-dot.dot-traffic { background: #9b59b6; }
+.dot-equipment .item-dot, .item-dot.dot-equipment { background: #1abc9c; }
+.dot-string .item-dot, .item-dot.dot-string { background: #e67e22; }
+.dot-other .item-dot, .item-dot.dot-other { background: #95a5a6; }
+
+.item-label {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.item-amount {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+/* 操作按钮 */
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
+  gap: 20rpx;
+}
+
+.btn-edit {
+  flex: 1;
+  background: #1aad19;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  padding: 22rpx;
+}
+
+.btn-delete {
+  width: 160rpx;
+  background: #fff;
+  color: #e74c3c;
+  border: 2rpx solid #e74c3c;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  padding: 22rpx 0;
+}

@@ -149,15 +149,17 @@ func DeleteBill(c *gin.Context) {
 	openid := c.GetString("openid")
 	id := c.Param("id")
 
-	tx := config.DB.Begin()
-	tx.Where("session_id = ?", id).Delete(&models.BillItem{})
-	result := tx.Where("id = ? AND open_id = ?", id, openid).Delete(&models.BillSession{})
-	tx.Commit()
-
-	if result.RowsAffected == 0 {
+	var session models.BillSession
+	if err := config.DB.Where("id = ? AND open_id = ?", id, openid).First(&session).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"code": 404, "msg": "记录不存在"})
 		return
 	}
+
+	tx := config.DB.Begin()
+	tx.Where("session_id = ?", id).Delete(&models.BillItem{})
+	tx.Where("id = ?", id).Delete(&models.BillSession{})
+	tx.Commit()
+
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "已删除"})
 }
 

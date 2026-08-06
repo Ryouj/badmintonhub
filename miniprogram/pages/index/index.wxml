@@ -87,7 +87,7 @@
     </view>
     
     <block wx:if="{{recentActivities.length > 0}}">
-      <view class="activity-item" wx:for="{{recentActivities}}" wx:key="_id">
+      <view class="activity-item" wx:for="{{recentActivities}}" wx:key="id">
         <view class="activity-left">
           <text class="activity-date">{{item.dateText}}</text>
           <text class="activity-duration">⏱ {{item.durationText}}</text>

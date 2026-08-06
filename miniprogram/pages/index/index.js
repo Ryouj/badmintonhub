@@ -43,6 +43,7 @@ Page({
       });
     } catch (err) {
       console.error('加载数据失败:', err);
+      wx.showToast({ title: '加载失败，下拉刷新重试', icon: 'none' });
     }
     wx.hideLoading();
   },
@@ -85,6 +86,6 @@ Page({
   goBills() { wx.switchTab({ url: '/pages/bills/bills' }); },
   goBillDetail(e) {
     const id = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: '/pages/bill-add/bill-add?id=' + id });
+    wx.navigateTo({ url: '/pages/bill-detail/bill-detail?id=' + id });
   }
 });

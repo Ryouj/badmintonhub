@@ -5,6 +5,7 @@
     "pages/activity-list/activity-list",
     "pages/bills/bills",
     "pages/bill-add/bill-add",
+    "pages/bill-detail/bill-detail",
     "pages/stats/stats",
     "pages/profile/profile"
   ],

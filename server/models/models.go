@@ -105,7 +105,7 @@ type StatsSummary struct {
 	TotalDuration  float64             `json:"totalDuration"`
 	MaxDuration    int                 `json:"maxDuration"`
 	ActivityCount  int64               `json:"activityCount"`
-	CategoryData   []CategoryBreakdown `json:"categoryBreakdown"`
+	CategoryData   []CategoryBreakdown `json:"categoryData"`
 	MonthlyTrend   []MonthlyTrend      `json:"monthlyTrend"`
 	TopVenues      []VenueCount        `json:"topVenues"`
 }

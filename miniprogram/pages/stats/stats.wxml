@@ -8,7 +8,17 @@
     <view class="tab {{period === 'all' ? 'active' : ''}}" bindtap="switchPeriod" data-period="all">全部</view>
   </view>
 
+  <!-- 空状态 -->
+  <block wx:if="{{isEmpty}}">
+    <view class="empty-state">
+      <text class="empty-icon">📊</text>
+      <text class="empty-text">暂无数据</text>
+      <text class="empty-desc">记录几次打球就能看到统计分析啦</text>
+    </view>
+  </block>
+
   <!-- 总览卡片 -->
+  <block wx:else>
   <view class="overview-card">
     <view class="overview-item">
       <text class="overview-value amount">¥{{summary.totalAmount || '0.00'}}</text>
@@ -80,3 +90,4 @@
     </view>
   </view>
 </view>
+</block>

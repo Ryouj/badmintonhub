@@ -19,7 +19,7 @@
         <text class="group-total amount">¥{{group.total}}</text>
       </view>
       
-      <view class="bill-item" wx:for="{{group.items}}" wx:key="id" bindtap="goEdit" data-id="{{item.id}}" bindlongpress="onLongPress" data-id="{{item.id}}">
+      <view class="bill-item" wx:for="{{group.items}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}" bindlongpress="onLongPress" data-id="{{item.id}}">
         <!-- 多项目明细 -->
         <view class="bill-items-row">
           <view class="bill-sub-item" wx:for="{{item.items}}" wx:key="id" wx:for-item="sub">

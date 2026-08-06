@@ -1,6 +1,6 @@
 // pages/profile/profile.js
 const api = require('../../utils/api');
-const { SKILL_LEVELS, PLAY_FREQUENCY, PLAY_YEARS, PLAY_STYLES } = require('../../utils/constants');
+const { SKILL_LEVELS, PLAY_FREQUENCY, PLAY_YEARS, PLAY_STYLES, PLAY_TYPES, HANDS } = require('../../utils/constants');
 
 Page({
   data: {
@@ -12,8 +12,8 @@ Page({
     playFrequencyOptions: PLAY_FREQUENCY,
     playYearsOptions: PLAY_YEARS,
     playStyleOptions: PLAY_STYLES,
-    playTypes: ['拉吊突击', '防守反击', '进攻杀球', '控网抢攻', '四方球', '混合型'],
-    hands: ['右手', '左手']
+    playTypes: PLAY_TYPES,
+    hands: HANDS
   },
 
   onShow() {
@@ -46,6 +46,7 @@ Page({
       });
     } catch (err) {
       console.error('加载档案失败:', err);
+      wx.showToast({ title: '加载失败', icon: 'none' });
     }
     wx.hideLoading();
   },

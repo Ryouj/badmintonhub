@@ -58,8 +58,14 @@ Page({
       });
     } catch (err) {
       console.error(err);
+      wx.showToast({ title: '加载失败，下拉刷新重试', icon: 'none' });
     }
     wx.hideLoading();
+    wx.stopPullDownRefresh();
+  },
+
+  onPullDownRefresh() {
+    this.loadBills();
   },
 
   groupByDate(bills) {
@@ -86,6 +92,10 @@ Page({
   },
 
   goAdd() { wx.navigateTo({ url: '/pages/bill-add/bill-add' }); },
+
+  goDetail(e) {
+    wx.navigateTo({ url: '/pages/bill-detail/bill-detail?id=' + e.currentTarget.dataset.id });
+  },
 
   goEdit(e) {
     wx.navigateTo({ url: '/pages/bill-add/bill-add?id=' + e.currentTarget.dataset.id });

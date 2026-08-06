@@ -56,25 +56,55 @@ func GetSummary(c *gin.Context) {
 		Group("bill_items.category").
 		Scan(&categoryData)
 
-	// 4. 月度趋势（近12个月）
-	var monthlyTrend []models.MonthlyTrend
+	// 4. 趋势图（根据 period 调整粒度）
+	var trend []models.MonthlyTrend
 	now := time.Now()
-	for i := 11; i >= 0; i-- {
-		m := now.AddDate(0, -i, 0)
-		mStart := time.Date(m.Year(), m.Month(), 1, 0, 0, 0, 0, time.Local)
-		mEnd := mStart.AddDate(0, 1, 0).Add(-time.Second)
-
-		var sum float64
-		config.DB.Table("bill_items").
-			Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
-			Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, mStart, mEnd).
-			Select("COALESCE(SUM(bill_items.amount), 0)").
-			Scan(&sum)
-
-		monthlyTrend = append(monthlyTrend, models.MonthlyTrend{
-			Month:  mStart.Format("1月"),
-			Amount: sum,
-		})
+	switch period {
+	case "week":
+		for i := 6; i >= 0; i-- {
+			d := now.AddDate(0, 0, -i)
+			dStart := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.Local)
+			dEnd := dStart.AddDate(0, 0, 1).Add(-time.Second)
+			var sum float64
+			config.DB.Table("bill_items").
+				Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
+				Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, dStart, dEnd).
+				Select("COALESCE(SUM(bill_items.amount), 0)").Scan(&sum)
+			trend = append(trend, models.MonthlyTrend{
+				Month:  dStart.Format("1月2日"),
+				Amount: sum,
+			})
+		}
+	case "year":
+		for i := 11; i >= 0; i-- {
+			m := now.AddDate(0, -i, 0)
+			mStart := time.Date(m.Year(), m.Month(), 1, 0, 0, 0, 0, time.Local)
+			mEnd := mStart.AddDate(0, 1, 0).Add(-time.Second)
+			var sum float64
+			config.DB.Table("bill_items").
+				Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
+				Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, mStart, mEnd).
+				Select("COALESCE(SUM(bill_items.amount), 0)").Scan(&sum)
+			trend = append(trend, models.MonthlyTrend{
+				Month:  mStart.Format("1月"),
+				Amount: sum,
+			})
+		}
+	default:
+		for i := 11; i >= 0; i-- {
+			m := now.AddDate(0, -i, 0)
+			mStart := time.Date(m.Year(), m.Month(), 1, 0, 0, 0, 0, time.Local)
+			mEnd := mStart.AddDate(0, 1, 0).Add(-time.Second)
+			var sum float64
+			config.DB.Table("bill_items").
+				Joins("JOIN bill_sessions ON bill_sessions.id = bill_items.session_id").
+				Where("bill_sessions.open_id = ? AND bill_sessions.date BETWEEN ? AND ?", openid, mStart, mEnd).
+				Select("COALESCE(SUM(bill_items.amount), 0)").Scan(&sum)
+			trend = append(trend, models.MonthlyTrend{
+				Month:  mStart.Format("1月"),
+				Amount: sum,
+			})
+		}
 	}
 
 	// 5. 球馆排行
@@ -96,7 +126,7 @@ func GetSummary(c *gin.Context) {
 			MaxDuration:   maxDuration,
 			ActivityCount: activityCount,
 			CategoryData:  categoryData,
-			MonthlyTrend:  monthlyTrend,
+			MonthlyTrend:  trend,
 			TopVenues:     topVenues,
 		},
 	})
