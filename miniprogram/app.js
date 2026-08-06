@@ -44,11 +44,9 @@ App({
     }
   },
 
-  // 获取微信头像昵称
+  // 获取微信头像昵称（静默获取，小程序启动时自动调用）
   getWxProfile() {
     return new Promise((resolve) => {
-      // wx.getUserProfile 需要用户点击触发，这里返回空对象兜底
-      // 用户可在个人档案页点击"从微信同步"手动获取
       wx.getUserInfo({
         success: (res) => {
           resolve({
@@ -57,22 +55,6 @@ App({
           });
         },
         fail: () => resolve({ nickName: '', avatarUrl: '' })
-      });
-    });
-  },
-
-  // 手动同步微信资料（供个人档案页调用）
-  syncWxProfile() {
-    return new Promise((resolve, reject) => {
-      wx.getUserProfile({
-        desc: '用于完善个人档案信息',
-        success: (res) => {
-          resolve({
-            nickName: res.userInfo.nickName || '',
-            avatarUrl: res.userInfo.avatarUrl || ''
-          });
-        },
-        fail: (err) => reject(err)
       });
     });
   },
