@@ -67,7 +67,12 @@ Page({
 
   onFieldChange(e) {
     const field = e.currentTarget.dataset.field;
-    this.setData({ ['editForm.' + field]: e.detail.value });
+    let value = e.detail.value;
+    // stringTension 在后端是 int，前端输入框返回字符串，需转换
+    if (field === 'stringTension') {
+      value = parseInt(value) || 0;
+    }
+    this.setData({ ['editForm.' + field]: value });
   },
 
   onPickerChange(e) {
@@ -100,9 +105,16 @@ Page({
       return;
     }
 
+    // 过滤前端显示用的标签字段，只保留后端需要的字段
+    const payload = {};
+    const fields = ['nickName','bio','avatarUrl','skillLevel','playYears','playFrequency',
+      'playStyle','playType','hand','mainRacket','shoes','shuttleBrand','stringTension',
+      'preferredVenue','city'];
+    fields.forEach(k => { if (form[k] !== undefined) payload[k] = form[k]; });
+
     wx.showLoading({ title: '保存中...' });
     try {
-      const updated = await api.userAPI.updateProfile(form);
+      const updated = await api.userAPI.updateProfile(payload);
       wx.showToast({ title: '保存成功', icon: 'success' });
       this.setData({ showEdit: false, profile: updated });
       getApp().globalData.userInfo = updated;
