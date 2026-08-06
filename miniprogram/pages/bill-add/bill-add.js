@@ -112,7 +112,7 @@ Page({
     const billData = {
       amount: parseFloat(amount),
       category,
-      date: date + ' ' + (time || '00:00') + ':00',
+      date: date + 'T' + (time || '00:00') + ':00+08:00',
       note: this.data.form.note || '',
       activityId: this.data.form.activityId || 0,
       activityLabel: this.data.form.activityLabel || ''
