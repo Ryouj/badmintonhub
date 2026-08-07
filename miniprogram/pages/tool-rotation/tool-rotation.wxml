@@ -1,0 +1,142 @@
+<!-- pages/tool-rotation/tool-rotation.wxml -->
+<view class="page">
+  <!-- 选手设置 -->
+  <view class="card">
+    <view class="card-title">🏸 选手（{{playerCount}}人）</view>
+    <view class="player-input-grid">
+      <view class="player-input-item" wx:for="{{players}}" wx:key="index">
+        <text class="player-idx">{{index + 1}}</text>
+        <input class="player-input" data-idx="{{index}}" bindinput="onPlayerInput" value="{{item}}" placeholder="选手{{index + 1}}" />
+      </view>
+    </view>
+    <view class="player-count-ctrl">
+      <view class="count-btn" bindtap="removePlayer">− 减人</view>
+      <view class="count-btn" bindtap="addPlayer">+ 加人</view>
+    </view>
+  </view>
+
+  <!-- 模式选择 -->
+  <view class="card">
+    <view class="card-title">⚙️ 模式</view>
+    <view class="mode-row">
+      <view class="mode-opt {{mode === item.key ? 'selected' : ''}}" wx:for="{{modes}}" wx:key="key" bindtap="onModeSelect" data-key="{{item.key}}">
+        <text class="mode-opt-label">{{item.label}}</text>
+        <text class="mode-opt-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 场地选择 -->
+  <view class="card">
+    <view class="card-title">🏟️ 场地</view>
+    <view class="court-row">
+      <view class="court-opt {{courts === 1 ? 'selected' : ''}}" bindtap="onCourtChange" data-courts="{{1}}">
+        <text>1片场地</text>
+        <text class="court-desc">4打4等</text>
+      </view>
+      <view class="court-opt {{courts === 2 ? 'selected' : ''}}" bindtap="onCourtChange" data-courts="{{2}}">
+        <text>2片场地</text>
+        <text class="court-desc">8人同时</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-btn" bindtap="{{mode === 'fair' ? 'generateFair' : mode === 'king' ? 'startKing' : 'generateRandom'}}">
+    {{mode === 'fair' ? '生成赛程' : mode === 'king' ? '开始擂台' : '生成本轮'}}
+  </view>
+
+  <!-- 公平轮换结果 -->
+  <block wx:if="{{mode === 'fair' && schedule}}">
+    <view class="card result-card">
+      <view class="card-title">📋 公平轮换赛程</view>
+      <view class="result-note">{{courts === 2 ? '2片场地' : '1片场地'}} · 共{{schedule.length}}轮 · 每人搭档不同</view>
+      <view class="round-block" wx:for="{{schedule}}" wx:key="round">
+        <view class="round-header">第{{item.round}}轮</view>
+        <view class="game-row" wx:for="{{item.games}}" wx:key="index" wx:for-item="game" wx:for-index="gi">
+          <view class="game-card">
+            <view class="court-label">场{{courtLabels[gi]}}</view>
+            <view class="teams">
+              <text class="team">{{game.team1[0]}}+{{game.team1[1]}}</text>
+              <text class="vs">VS</text>
+              <text class="team">{{game.team2[0]}}+{{game.team2[1]}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="bench-row" wx:if="{{item.bench.length > 0}}">
+          <text class="bench-label">休息:</text>
+          <text class="bench-names">{{item.bench}}</text>
+        </view>
+      </view>
+      <view class="copy-btn" bindtap="copySchedule">📋 复制赛程</view>
+    </view>
+  </block>
+
+  <!-- 擂台制 -->
+  <block wx:if="{{mode === 'king' && kingState}}">
+    <view class="card result-card">
+      <view class="card-title">🏆 擂台战 · 第{{kingState.gameNum}}局</view>
+      <view class="king-matchup">
+        <view class="king-team king-team-1" bindtap="onKingWin" data-team="{{1}}">
+          <text class="king-team-label">A 队</text>
+          <text class="king-team-names">{{kingState.team1[0]}} + {{kingState.team1[1]}}</text>
+          <text class="king-win-hint">点此=赢</text>
+        </view>
+        <view class="king-vs">VS</view>
+        <view class="king-team king-team-2" bindtap="onKingWin" data-team="{{2}}">
+          <text class="king-team-label">B 队</text>
+          <text class="king-team-names">{{kingState.team2[0]}} + {{kingState.team2[1]}}</text>
+          <text class="king-win-hint">点此=赢</text>
+        </view>
+      </view>
+      <view class="king-bench" wx:if="{{kingState.bench.length > 0}}">
+        <text class="bench-label">等候上场:</text>
+        <text class="bench-names">{{kingState.bench}}</text>
+      </view>
+    </view>
+
+    <!-- 擂台统计 -->
+    <view class="card" wx:if="{{statsList && statsList.length > 0}}">
+      <view class="card-title">📊 战绩</view>
+      <view class="stats-table">
+        <view class="stats-header-row">
+          <text class="stats-name-h">选手</text>
+          <text class="stats-num-h">场次</text>
+          <text class="stats-num-h">胜</text>
+          <text class="stats-num-h">负</text>
+          <text class="stats-num-h">胜率</text>
+        </view>
+        <view class="stats-row" wx:for="{{statsList}}" wx:key="name">
+          <text class="stats-name">{{item.name}}</text>
+          <text class="stats-num">{{item.played}}</text>
+          <text class="stats-num">{{item.wins}}</text>
+          <text class="stats-num">{{item.losses}}</text>
+          <text class="stats-num">{{item.winRate}}%</text>
+        </view>
+      </view>
+      <view class="copy-btn" bindtap="copySchedule">📋 复制战报</view>
+    </view>
+  </block>
+
+  <!-- 随机配对 -->
+  <block wx:if="{{mode === 'random' && randomMatch}}">
+    <view class="card result-card">
+      <view class="card-title">🎲 随机配对 · 第{{randomMatch.round}}轮</view>
+      <view class="game-row" wx:for="{{randomMatch.games}}" wx:key="index" wx:for-item="game" wx:for-index="gi">
+        <view class="game-card">
+          <view class="court-label">场{{courtLabels[gi]}}</view>
+          <view class="teams">
+            <text class="team">{{game.team1[0]}}+{{game.team1[1]}}</text>
+            <text class="vs">VS</text>
+            <text class="team">{{game.team2[0]}}+{{game.team2[1]}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="king-bench" wx:if="{{randomMatch.bench.length > 0}}">
+        <text class="bench-label">休息:</text>
+        <text class="bench-names">{{randomMatch.bench}}</text>
+      </view>
+    </view>
+    <view class="action-btn" bindtap="generateRandom">下一轮</view>
+  </block>
+</view>

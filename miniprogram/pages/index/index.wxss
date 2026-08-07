@@ -108,7 +108,8 @@
 .action-icon-bill { background: #fff3e0; }
 .action-icon-play { background: #e8f5e9; }
 .action-icon-chart { background: #e3f2fd; }
-.action-icon-me { background: #f3e5f5; }
+.action-icon-tool { background: #f3e5f5; }
+.action-icon-me { background: #fce4ec; }
 
 .action-label {
   font-size: 24rpx;

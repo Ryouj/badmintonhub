@@ -7,6 +7,9 @@
     "pages/bill-add/bill-add",
     "pages/bill-detail/bill-detail",
     "pages/stats/stats",
+    "pages/tools/tools",
+    "pages/tool-fee/tool-fee",
+    "pages/tool-rotation/tool-rotation",
     "pages/profile/profile"
   ],
   "window": {
@@ -38,6 +41,12 @@
         "text": "统计",
         "iconPath": "images/tab-stats.png",
         "selectedIconPath": "images/tab-stats-active.png"
+      },
+      {
+        "pagePath": "pages/tools/tools",
+        "text": "工具",
+        "iconPath": "images/tab-tools.png",
+        "selectedIconPath": "images/tab-tools-active.png"
       },
       {
         "pagePath": "pages/profile/profile",

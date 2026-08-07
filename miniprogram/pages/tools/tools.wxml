@@ -1,0 +1,27 @@
+<!-- pages/tools/tools.wxml -->
+<view class="page">
+  <view class="page-header">
+    <text class="page-title">🧰 羽毛球工具箱</text>
+    <text class="page-sub">实用小工具，打球更轻松</text>
+  </view>
+
+  <view class="tool-grid">
+    <view class="tool-card" wx:for="{{tools}}" wx:key="key" bindtap="onTapTool" data-page="{{item.page}}">
+      <view class="tool-icon" style="background: {{item.color}}15;">
+        <text style="font-size: 48rpx;">{{item.icon}}</text>
+      </view>
+      <view class="tool-info">
+        <view class="tool-title-row">
+          <text class="tool-title">{{item.title}}</text>
+          <text class="tool-badge" wx:if="{{item.badge}}">{{item.badge}}</text>
+        </view>
+        <text class="tool-desc">{{item.desc}}</text>
+      </view>
+      <text class="tool-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="tool-tip">
+    <text>💡 更多工具持续开发中</text>
+  </view>
+</view>

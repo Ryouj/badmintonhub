@@ -82,6 +82,7 @@ Page({
   goAddBill() { wx.navigateTo({ url: '/pages/bill-add/bill-add' }); },
   goActivityList() { wx.navigateTo({ url: '/pages/activity-list/activity-list' }); },
   goStats() { wx.switchTab({ url: '/pages/stats/stats' }); },
+  goTools() { wx.switchTab({ url: '/pages/tools/tools' }); },
   goBills() { wx.switchTab({ url: '/pages/bills/bills' }); },
   goBillDetail(e) {
     const id = e.currentTarget.dataset.id;

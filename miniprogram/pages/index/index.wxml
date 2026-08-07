@@ -41,6 +41,10 @@
       <view class="action-icon action-icon-chart">📊</view>
       <text class="action-label">看统计</text>
     </view>
+    <view class="action-item" bindtap="goTools">
+      <view class="action-icon action-icon-tool">🧰</view>
+      <text class="action-label">工具箱</text>
+    </view>
     <view class="action-item" bindtap="goProfile">
       <view class="action-icon action-icon-me">👤</view>
       <text class="action-label">我的</text>

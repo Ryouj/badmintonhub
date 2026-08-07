@@ -1,0 +1,342 @@
+/* pages/tool-rotation/tool-rotation.wxss */
+.page {
+  padding: 20rpx 30rpx 60rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+
+/* 选手输入网格 */
+.player-input-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.player-input-item {
+  display: flex;
+  align-items: center;
+  width: calc(50% - 8rpx);
+  background: #f8f8f8;
+  border-radius: 10rpx;
+  padding: 8rpx 16rpx;
+}
+
+.player-idx {
+  font-size: 24rpx;
+  color: #1aad19;
+  font-weight: 600;
+  width: 36rpx;
+  flex-shrink: 0;
+}
+
+.player-input {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+.player-count-ctrl {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 16rpx;
+}
+
+.count-btn {
+  flex: 1;
+  text-align: center;
+  padding: 12rpx;
+  font-size: 26rpx;
+  color: #1aad19;
+  border: 2rpx dashed #1aad19;
+  border-radius: 10rpx;
+}
+
+/* 模式选择 */
+.mode-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.mode-opt {
+  padding: 20rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid #e0e0e0;
+  background: #fafafa;
+}
+
+.mode-opt.selected {
+  border-color: #1aad19;
+  background: #e8f5e9;
+}
+
+.mode-opt-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  display: block;
+}
+
+.mode-opt-desc {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* 场地选择 */
+.court-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.court-opt {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid #e0e0e0;
+  background: #fafafa;
+  font-size: 28rpx;
+}
+
+.court-opt.selected {
+  border-color: #1aad19;
+  background: #e8f5e9;
+  color: #1aad19;
+  font-weight: 500;
+}
+
+.court-desc {
+  font-size: 22rpx;
+  color: #999;
+  display: block;
+  margin-top: 4rpx;
+}
+
+/* 操作按钮 */
+.action-btn {
+  background: #1aad19;
+  color: #fff;
+  text-align: center;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin: 10rpx 0 20rpx;
+}
+
+/* 结果卡片 */
+.result-card {
+  border: 2rpx solid #1aad19;
+}
+
+.result-note {
+  font-size: 24rpx;
+  color: #666;
+  background: #f5f5f5;
+  padding: 12rpx 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+/* 赛程 */
+.round-block {
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.round-header {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1aad19;
+  margin-bottom: 12rpx;
+}
+
+.game-row {
+  margin-bottom: 12rpx;
+}
+
+.game-card {
+  display: flex;
+  align-items: center;
+  background: #f8f8f8;
+  border-radius: 10rpx;
+  padding: 16rpx 20rpx;
+}
+
+.court-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #999;
+  background: #e0e0e0;
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.teams {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: space-around;
+}
+
+.team {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.vs {
+  font-size: 24rpx;
+  color: #e74c3c;
+  font-weight: 700;
+  padding: 0 16rpx;
+}
+
+.bench-row {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+  padding-left: 16rpx;
+}
+
+.bench-label {
+  font-size: 24rpx;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.bench-names {
+  font-size: 24rpx;
+  color: #666;
+  margin-left: 8rpx;
+}
+
+/* 擂台制 */
+.king-matchup {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.king-team {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 16rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+}
+
+.king-team-1 {
+  background: #e3f2fd;
+  border-color: #1976d2;
+}
+
+.king-team-2 {
+  background: #fce4ec;
+  border-color: #c2185b;
+}
+
+.king-team-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  display: block;
+}
+
+.king-team-names {
+  font-size: 30rpx;
+  font-weight: 600;
+  display: block;
+  margin: 8rpx 0;
+}
+
+.king-win-hint {
+  font-size: 22rpx;
+  color: #999;
+  display: block;
+}
+
+.king-vs {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #e74c3c;
+  flex-shrink: 0;
+}
+
+.king-bench {
+  display: flex;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 12rpx 16rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+}
+
+/* 统计表 */
+.stats-table {
+  margin-bottom: 16rpx;
+}
+
+.stats-header-row {
+  display: flex;
+  padding: 12rpx 0;
+  border-bottom: 2rpx solid #e0e0e0;
+}
+
+.stats-name-h {
+  flex: 2;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #666;
+}
+
+.stats-num-h {
+  flex: 1;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #666;
+  text-align: center;
+}
+
+.stats-row {
+  display: flex;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.stats-name {
+  flex: 2;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.stats-num {
+  flex: 1;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+/* 复制按钮 */
+.copy-btn {
+  text-align: center;
+  padding: 16rpx;
+  background: #1aad19;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  margin-top: 12rpx;
+}

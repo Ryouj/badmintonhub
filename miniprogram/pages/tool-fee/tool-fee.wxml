@@ -1,0 +1,118 @@
+<!-- pages/tool-fee/tool-fee.wxml -->
+<view class="page">
+  <!-- 总费用 -->
+  <view class="card">
+    <view class="card-title">💰 总费用</view>
+    <view class="amount-input-row">
+      <text class="currency">¥</text>
+      <input class="amount-input" type="digit" value="{{totalAmount}}" bindinput="onTotalInput" placeholder="0.00" />
+    </view>
+    <view class="detail-toggle" bindtap="toggleDetail">
+      <text>{{showDetail ? '收起明细' : '展开明细（分项输入）'}}</text>
+    </view>
+    <block wx:if="{{showDetail}}">
+      <view class="detail-list">
+        <view class="detail-row" wx:for="{{detailItems}}" wx:key="key">
+          <text class="detail-label">{{item.label}}</text>
+          <view class="detail-input-box">
+            <text class="detail-currency">¥</text>
+            <input class="detail-input" type="digit" data-idx="{{index}}" bindinput="onDetailInput" value="{{item.amount}}" placeholder="0" />
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 模式选择 -->
+  <view class="card">
+    <view class="card-title">📋 计费模式</view>
+    <view class="mode-grid">
+      <view class="mode-chip {{mode === item.key ? 'selected' : ''}}" wx:for="{{modes}}" wx:key="key" bindtap="onModeSelect" data-key="{{item.key}}">
+        <text class="mode-label">{{item.label}}</text>
+        <text class="mode-desc">{{item.desc}}</text>
+      </view>
+    </view>
+
+    <!-- 模式参数 -->
+    <block wx:if="{{needDiscount}}">
+      <view class="param-row">
+        <text class="param-label">女生折扣</text>
+        <view class="param-input-box">
+          <input class="param-input" type="digit" value="{{discountRatio}}" bindinput="onDiscountInput" />
+          <text class="param-suffix">折（0~1，0.5=五折）</text>
+        </view>
+      </view>
+    </block>
+    <block wx:if="{{needFixed}}">
+      <view class="param-row">
+        <text class="param-label">固定金额</text>
+        <view class="param-input-box">
+          <text class="param-currency">¥</text>
+          <input class="param-input" type="digit" value="{{fixedAmount}}" bindinput="onFixedInput" />
+          <text class="param-suffix">/人</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 参与者 -->
+  <view class="card">
+    <view class="card-title">👥 参与者（{{players.length}}）</view>
+    <view class="player-list">
+      <view class="player-row" wx:for="{{players}}" wx:key="index">
+        <text class="player-num">{{index + 1}}</text>
+        <input class="player-name" data-idx="{{index}}" bindinput="onPlayerName" value="{{item.name}}" placeholder="姓名/昵称" />
+
+        <!-- 性别切换 -->
+        <view wx:if="{{needGender}}" class="gender-toggle {{item.gender}}" data-idx="{{index}}" bindtap="onGenderToggle">
+          <text>{{item.gender === 'male' ? '男' : '女'}}</text>
+        </view>
+
+        <!-- 轮次 -->
+        <view wx:if="{{needRounds}}" class="rounds-control">
+          <view class="rounds-btn" data-idx="{{index}}" data-step="{{-1}}" bindtap="onRoundsStep">−</view>
+          <text class="rounds-val">{{item.rounds}}</text>
+          <view class="rounds-btn" data-idx="{{index}}" data-step="{{1}}" bindtap="onRoundsStep">+</view>
+        </view>
+
+        <!-- 嘉宾标记 -->
+        <view wx:if="{{needGuest}}" class="tag-toggle {{item.isGuest ? 'active' : ''}}" data-idx="{{index}}" bindtap="onGuestToggle">
+          <text>{{item.isGuest ? '嘉宾' : '常客'}}</text>
+        </view>
+
+        <!-- 胜败标记 -->
+        <view wx:if="{{needLoser}}" class="tag-toggle {{item.isLoser ? 'active loser' : 'winner'}}" data-idx="{{index}}" bindtap="onLoserToggle">
+          <text>{{item.isLoser ? '败' : '胜'}}</text>
+        </view>
+
+        <view class="player-del" wx:if="{{players.length > 1}}" data-idx="{{index}}" bindtap="removePlayer">✕</view>
+      </view>
+    </view>
+    <view class="add-player" bindtap="addPlayer">
+      <text>+ 添加人员</text>
+    </view>
+  </view>
+
+  <!-- 计算按钮 -->
+  <view class="calc-btn" bindtap="calculate">计算分摊</view>
+
+  <!-- 结果 -->
+  <view class="card result-card" wx:if="{{results}}">
+    <view class="card-title">📊 分摊结果</view>
+    <view class="result-note" wx:if="{{resultNote}}">{{resultNote}}</view>
+    <view class="result-list">
+      <view class="result-row" wx:for="{{results}}" wx:key="index">
+        <view class="result-name">
+          <text>{{item.name}}</text>
+          <text class="result-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+        </view>
+        <text class="result-amount">¥{{item.amount}}</text>
+      </view>
+    </view>
+    <view class="result-total-row">
+      <text class="result-total-label">合计</text>
+      <text class="result-total-value">¥{{resultTotal}}</text>
+    </view>
+    <view class="copy-btn" bindtap="copyResult">📋 复制到剪贴板</view>
+  </view>
+</view>
