@@ -1,4 +1,4 @@
-// pages/profile/profile.js - 视觉升级版 + 微信头像昵称
+// pages/profile/profile.js - 极简可选版
 const api = require('../../utils/api');
 const { SKILL_LEVELS, PLAY_FREQUENCY, PLAY_YEARS, PLAY_STYLES, PLAY_TYPES, HANDS } = require('../../utils/constants');
 
@@ -24,6 +24,9 @@ Page({
     editingSection: null,
     editForm: {},
     bioCount: 0,
+    hasSkill: false,
+    hasEquip: false,
+    hasPref: false,
     skillLevelOptions: SKILL_LEVELS,
     playFrequencyOptions: PLAY_FREQUENCY,
     playYearsOptions: PLAY_YEARS,
@@ -67,6 +70,9 @@ Page({
         loading: false,
         editingSection: null,
         editForm: {},
+        hasSkill: !!(profile.skillLevel || profile.playYears || profile.playFrequency || profile.playStyle),
+        hasEquip: !!(profile.mainRacket || profile.shoes || profile.shuttleBrand || profile.stringTension),
+        hasPref: !!(profile.preferredVenue || profile.city || profile.playType || profile.hand),
         totalData: {
           totalAmount: (stats.totalAmount || 0).toFixed(2),
           totalDuration: Math.round((stats.totalDuration || 0) * 10) / 10,
@@ -116,14 +122,12 @@ Page({
     this.setData({ editingSection: null, editForm: {} });
   },
 
-  // 微信头像选择（open-type="chooseAvatar" 回调）
   onChooseAvatar: function (e) {
     var avatarUrl = e.detail.avatarUrl;
     this.setData({ 'editForm.avatarUrl': avatarUrl });
     this.uploadAvatar(avatarUrl);
   },
 
-  // 上传头像到云存储
   uploadAvatar: function (tempPath) {
     var that = this;
     wx.showLoading({ title: '上传头像...' });
@@ -178,11 +182,6 @@ Page({
     var form = this.data.editForm;
     var fields = SECTION_FIELDS[section];
 
-    if (section === 'basic' && !form.nickName) {
-      wx.showToast({ title: '请填写昵称', icon: 'none' });
-      return;
-    }
-
     var payload = {};
     fields.forEach(function (f) {
       if (form[f] !== undefined) payload[f] = form[f];
@@ -196,7 +195,6 @@ Page({
         if (updated[f] !== undefined) profile[f] = updated[f];
       });
 
-      // 处理 picker label 字段 + 衍生显示字段
       profile.stringTensionDisplay = profile.stringTension ? profile.stringTension + '磅' : '';
       if (section === 'skill') {
         ['skillLevel', 'playYears', 'playFrequency', 'playStyle'].forEach(function (k) {
@@ -210,7 +208,14 @@ Page({
       }
 
       wx.showToast({ title: '保存成功', icon: 'success' });
-      this.setData({ editingSection: null, editForm: {}, profile: profile });
+      this.setData({
+        editingSection: null,
+        editForm: {},
+        profile: profile,
+        hasSkill: !!(profile.skillLevel || profile.playYears || profile.playFrequency || profile.playStyle),
+        hasEquip: !!(profile.mainRacket || profile.shoes || profile.shuttleBrand || profile.stringTension),
+        hasPref: !!(profile.preferredVenue || profile.city || profile.playType || profile.hand)
+      });
       getApp().globalData.userInfo = profile;
       getApp().globalData.needsSetup = !profile.nickName;
     } catch (err) {

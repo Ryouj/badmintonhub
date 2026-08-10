@@ -1,26 +1,24 @@
-<!-- pages/profile/profile.wxml - 视觉升级版 -->
+<!-- pages/profile/profile.wxml - 极简可选版 -->
 <view class="page">
 
   <!-- === 头部大卡片 === -->
   <view class="header-card">
-    <!-- 个人信息行 -->
     <view class="hc-top">
       <view class="hc-avatar-wrap">
         <image class="hc-avatar" src="{{profile.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
-        <view class="hc-level level-{{profile.skillLevel}}">
-          {{profile.skillLevelLabel || '?'}}
+        <view class="hc-level level-{{profile.skillLevel}}" wx:if="{{profile.skillLevelLabel}}">
+          {{profile.skillLevelLabel}}
         </view>
       </view>
       <view class="hc-info">
-        <text class="hc-nickname">{{profile.nickName || '未设置昵称'}}</text>
-        <text class="hc-bio">{{profile.bio || '介绍一下你对羽毛球的热爱吧~'}}</text>
+        <text class="hc-nickname">{{profile.nickName || '羽球集用户'}}</text>
+        <text class="hc-bio" wx:if="{{profile.bio}}">{{profile.bio}}</text>
         <text class="hc-edit-btn" wx:if="{{editingSection !== 'basic'}}" bindtap="toggleEdit" data-section="basic">✏️ 编辑资料</text>
       </view>
     </view>
 
-    <!-- 基本资料行内编辑（含微信头像昵称） -->
+    <!-- 基本资料行内编辑 -->
     <view wx:if="{{editingSection === 'basic'}}" class="basic-edit">
-      <!-- 头像选择 -->
       <view class="be-avatar-row">
         <button class="be-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
           <image class="be-avatar-preview" src="{{editForm.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
@@ -87,7 +85,7 @@
         <text class="card-toggle {{editingSection === 'skill' ? 'active' : ''}}"
               bindtap="{{editingSection === 'skill' ? 'saveSection' : 'toggleEdit'}}"
               data-section="skill">
-          {{editingSection === 'skill' ? '完成' : '编辑'}}
+          {{editingSection === 'skill' ? '完成' : (hasSkill ? '编辑' : '添加')}}
         </text>
       </view>
 
@@ -118,24 +116,25 @@
         </view>
       </view>
 
-      <view class="info-grid">
-        <view class="ig-item">
+      <view wx:if="{{hasSkill}}" class="info-grid">
+        <view class="ig-item" wx:if="{{profile.skillLevelLabel}}">
           <text class="ig-label">水平等级</text>
-          <text class="ig-value level-text">{{profile.skillLevelLabel || '待填写'}}</text>
+          <text class="ig-value level-text">{{profile.skillLevelLabel}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.playYears}}">
           <text class="ig-label">球龄</text>
-          <text class="ig-value {{profile.playYears ? '' : 'empty'}}">{{profile.playYearsLabel || '待填写'}}</text>
+          <text class="ig-value">{{profile.playYearsLabel}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.playFrequency}}">
           <text class="ig-label">打球频率</text>
-          <text class="ig-value {{profile.playFrequency ? '' : 'empty'}}">{{profile.playFrequencyLabel || '待填写'}}</text>
+          <text class="ig-value">{{profile.playFrequencyLabel}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.playStyle}}">
           <text class="ig-label">打球类型</text>
-          <text class="ig-value {{profile.playStyle ? '' : 'empty'}}">{{profile.playStyleLabel || '待填写'}}</text>
+          <text class="ig-value">{{profile.playStyleLabel}}</text>
         </view>
       </view>
+      <view wx:else class="empty-hint" bindtap="toggleEdit" data-section="skill">点此添加</view>
     </view>
 
     <!-- 常用装备 -->
@@ -146,7 +145,7 @@
         <text class="card-toggle {{editingSection === 'equipment' ? 'active' : ''}}"
               bindtap="{{editingSection === 'equipment' ? 'saveSection' : 'toggleEdit'}}"
               data-section="equipment">
-          {{editingSection === 'equipment' ? '完成' : '编辑'}}
+          {{editingSection === 'equipment' ? '完成' : (hasEquip ? '编辑' : '添加')}}
         </text>
       </view>
 
@@ -169,24 +168,25 @@
         </view>
       </view>
 
-      <view class="info-grid">
-        <view class="ig-item">
+      <view wx:if="{{hasEquip}}" class="info-grid">
+        <view class="ig-item" wx:if="{{profile.mainRacket}}">
           <text class="ig-label">主力球拍</text>
-          <text class="ig-value {{profile.mainRacket ? '' : 'empty'}}">{{profile.mainRacket || '待填写'}}</text>
+          <text class="ig-value">{{profile.mainRacket}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.shoes}}">
           <text class="ig-label">球鞋</text>
-          <text class="ig-value {{profile.shoes ? '' : 'empty'}}">{{profile.shoes || '待填写'}}</text>
+          <text class="ig-value">{{profile.shoes}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.shuttleBrand}}">
           <text class="ig-label">常用球</text>
-          <text class="ig-value {{profile.shuttleBrand ? '' : 'empty'}}">{{profile.shuttleBrand || '待填写'}}</text>
+          <text class="ig-value">{{profile.shuttleBrand}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.stringTension}}">
           <text class="ig-label">拉线磅数</text>
-          <text class="ig-value {{profile.stringTension ? '' : 'empty'}}">{{profile.stringTensionDisplay || '待填写'}}</text>
+          <text class="ig-value">{{profile.stringTensionDisplay}}</text>
         </view>
       </view>
+      <view wx:else class="empty-hint" bindtap="toggleEdit" data-section="equipment">点此添加</view>
     </view>
 
     <!-- 打球偏好 -->
@@ -197,7 +197,7 @@
         <text class="card-toggle {{editingSection === 'preference' ? 'active' : ''}}"
               bindtap="{{editingSection === 'preference' ? 'saveSection' : 'toggleEdit'}}"
               data-section="preference">
-          {{editingSection === 'preference' ? '完成' : '编辑'}}
+          {{editingSection === 'preference' ? '完成' : (hasPref ? '编辑' : '添加')}}
         </text>
       </view>
 
@@ -224,24 +224,25 @@
         </view>
       </view>
 
-      <view class="info-grid">
-        <view class="ig-item">
+      <view wx:if="{{hasPref}}" class="info-grid">
+        <view class="ig-item" wx:if="{{profile.preferredVenue}}">
           <text class="ig-label">常用球馆</text>
-          <text class="ig-value {{profile.preferredVenue ? '' : 'empty'}}">{{profile.preferredVenue || '待填写'}}</text>
+          <text class="ig-value">{{profile.preferredVenue}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.city}}">
           <text class="ig-label">所在城市</text>
-          <text class="ig-value {{profile.city ? '' : 'empty'}}">{{profile.city || '待填写'}}</text>
+          <text class="ig-value">{{profile.city}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.playType}}">
           <text class="ig-label">擅长打法</text>
-          <text class="ig-value {{profile.playType ? '' : 'empty'}}">{{profile.playType || '待填写'}}</text>
+          <text class="ig-value">{{profile.playType}}</text>
         </view>
-        <view class="ig-item">
+        <view class="ig-item" wx:if="{{profile.hand}}">
           <text class="ig-label">惯用手</text>
-          <text class="ig-value {{profile.hand ? '' : 'empty'}}">{{profile.hand || '待填写'}}</text>
+          <text class="ig-value">{{profile.hand}}</text>
         </view>
       </view>
+      <view wx:else class="empty-hint" bindtap="toggleEdit" data-section="preference">点此添加</view>
     </view>
 
   </view>

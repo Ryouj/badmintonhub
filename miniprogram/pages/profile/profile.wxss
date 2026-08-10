@@ -251,3 +251,9 @@
 .level-text {
   color: #1aad19; font-weight: 700;
 }
+
+/* 空状态提示 */
+.empty-hint {
+  font-size: 24rpx; color: #ccc;
+  text-align: center; padding: 16rpx 0 8rpx;
+}
