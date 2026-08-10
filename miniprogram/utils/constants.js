@@ -53,6 +53,79 @@ const PLAY_TYPES = ['拉吊突击', '防守反击', '进攻杀球', '控网抢�
 // 惯用手（个人档案页用）
 const HANDS = ['右手', '左手'];
 
+// 球拍品牌型号
+const RACKET_BRANDS = [
+  { key: 'yonex-100zz',   label: 'Yonex 天斧100ZZ' },
+  { key: 'yonex-88dp',    label: 'Yonex 天斧88D Pro' },
+  { key: 'yonex-77p',     label: 'Yonex 天斧77 Pro' },
+  { key: 'yonex-arc11p',  label: 'Yonex 弓剑11 Pro' },
+  { key: 'yonex-nf800',   label: 'Yonex 疾光800' },
+  { key: 'yonex-nf1000z', label: 'Yonex 疾光1000Z' },
+  { key: 'victor-100x',   label: 'Victor 神速100X' },
+  { key: 'victor-90k',    label: 'Victor 驭9X' },
+  { key: 'lining-900',    label: '李宁 风刃900' },
+  { key: 'lining-80',     label: '李宁 雷霆80' },
+  { key: 'lining-8000',   label: '李宁 战戟8000' },
+  { key: 'kawasaki-h2',   label: '川崎 矛18' },
+  { key: 'other',         label: '其他品牌' }
+];
+
+// 羽毛球鞋
+const SHOE_BRANDS = [
+  { key: 'yonex-65z3',   label: 'Yonex 65Z3' },
+  { key: 'yonex-cascade', label: 'Yonex 超轻4代' },
+  { key: 'yonex-eclipsion', label: 'Yonex Eclipsion Z3' },
+  { key: 'victor-p9200',  label: 'Victor P9200' },
+  { key: 'victor-a970',   label: 'Victor A970' },
+  { key: 'victor-s82',    label: 'Victor S82' },
+  { key: 'lining-blade',  label: '李宁 变色龙' },
+  { key: 'lining-shadow', label: '李宁 影速' },
+  { key: 'lining-sonic',  label: '李宁 音爆' },
+  { key: 'mizuno-wave',   label: 'Mizuno Wave Claw' },
+  { key: 'other',         label: '其他品牌' }
+];
+
+// 羽毛球品牌
+const SHUTTLE_BRANDS = [
+  { key: 'yonex-as50',  label: 'Yonex AS50' },
+  { key: 'yonex-as40',  label: 'Yonex AS40' },
+  { key: 'yonex-as30',  label: 'Yonex AS30' },
+  { key: 'yonex-as20',  label: 'Yonex AS20' },
+  { key: 'yonex-as05',  label: 'Yonex AS05' },
+  { key: 'victor-master', label: 'Victor Master 大师' },
+  { key: 'victor-champion', label: 'Victor Champion 冠军' },
+  { key: 'victor-gold',  label: 'Victor Gold 金黄' },
+  { key: 'lining-a3',    label: '李宁 A3' },
+  { key: 'lining-a6',    label: '李宁 A6' },
+  { key: 'lining-g600',  label: '李宁 G600' },
+  { key: 'lingmei-7',    label: '翎美 7号' },
+  { key: 'rsl-4',        label: 'RSL 4号' },
+  { key: 'rsl-5',        label: 'RSL 5号' },
+  { key: 'other',        label: '其他品牌' }
+];
+
+// 拉线磅数
+const STRING_TENSIONS = [];
+for (var i = 22; i <= 32; i++) {
+  STRING_TENSIONS.push({ key: String(i), label: i + '磅' });
+}
+
+// 城市
+const CITIES = [
+  { key: '北京', label: '北京' }, { key: '上海', label: '上海' },
+  { key: '广州', label: '广州' }, { key: '深圳', label: '深圳' },
+  { key: '杭州', label: '杭州' }, { key: '南京', label: '南京' },
+  { key: '成都', label: '成都' }, { key: '重庆', label: '重庆' },
+  { key: '武汉', label: '武汉' }, { key: '西安', label: '西安' },
+  { key: '苏州', label: '苏州' }, { key: '宁波', label: '宁波' },
+  { key: '温州', label: '温州' }, { key: '厦门', label: '厦门' },
+  { key: '福州', label: '福州' }, { key: '长沙', label: '长沙' },
+  { key: '天津', label: '天津' }, { key: '郑州', label: '郑州' },
+  { key: '济南', label: '济南' }, { key: '青岛', label: '青岛' },
+  { key: '大连', label: '大连' }, { key: '合肥', label: '合肥' },
+  { key: '东莞', label: '东莞' }, { key: '佛山', label: '佛山' }
+];
+
 // 统一文案
 const LABELS = {
   NOT_SET: '未设置',
@@ -70,5 +143,10 @@ module.exports = {
   PLAY_STYLES,
   PLAY_TYPES,
   HANDS,
+  RACKET_BRANDS,
+  SHOE_BRANDS,
+  SHUTTLE_BRANDS,
+  STRING_TENSIONS,
+  CITIES,
   LABELS
 };

@@ -152,38 +152,46 @@
       <view class="edit-panel {{editingSection === 'equipment' ? 'show' : ''}}">
         <view class="ep-row">
           <text class="ep-label">主力球拍</text>
-          <input class="ep-input" value="{{editForm.mainRacket}}" bindinput="onFieldChange" data-field="mainRacket" placeholder="如 Yonex 天斧100ZZ" />
+          <picker mode="selector" range="{{racketOptions}}" range-key="label" bindchange="onPickerChange" data-field="mainRacket">
+            <view class="ep-picker">{{editForm.mainRacketLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
         </view>
         <view class="ep-row">
           <text class="ep-label">球鞋</text>
-          <input class="ep-input" value="{{editForm.shoes}}" bindinput="onFieldChange" data-field="shoes" placeholder="如 Yonex 65Z3" />
+          <picker mode="selector" range="{{shoeOptions}}" range-key="label" bindchange="onPickerChange" data-field="shoes">
+            <view class="ep-picker">{{editForm.shoesLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
         </view>
         <view class="ep-row">
           <text class="ep-label">常用球</text>
-          <input class="ep-input" value="{{editForm.shuttleBrand}}" bindinput="onFieldChange" data-field="shuttleBrand" placeholder="如 Yonex AS50" />
+          <picker mode="selector" range="{{shuttleOptions}}" range-key="label" bindchange="onPickerChange" data-field="shuttleBrand">
+            <view class="ep-picker">{{editForm.shuttleBrandLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
         </view>
         <view class="ep-row">
           <text class="ep-label">拉线磅数</text>
-          <input class="ep-input" type="digit" value="{{editForm.stringTension}}" bindinput="onFieldChange" data-field="stringTension" placeholder="如 26" />
+          <picker mode="selector" range="{{tensionOptions}}" range-key="label" bindchange="onPickerChange" data-field="stringTension">
+            <view class="ep-picker">{{editForm.stringTensionLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
         </view>
       </view>
 
       <view wx:if="{{hasEquip}}" class="info-grid">
         <view class="ig-item" wx:if="{{profile.mainRacket}}">
           <text class="ig-label">主力球拍</text>
-          <text class="ig-value">{{profile.mainRacket}}</text>
+          <text class="ig-value">{{profile.mainRacketLabel}}</text>
         </view>
         <view class="ig-item" wx:if="{{profile.shoes}}">
           <text class="ig-label">球鞋</text>
-          <text class="ig-value">{{profile.shoes}}</text>
+          <text class="ig-value">{{profile.shoesLabel}}</text>
         </view>
         <view class="ig-item" wx:if="{{profile.shuttleBrand}}">
           <text class="ig-label">常用球</text>
-          <text class="ig-value">{{profile.shuttleBrand}}</text>
+          <text class="ig-value">{{profile.shuttleBrandLabel}}</text>
         </view>
         <view class="ig-item" wx:if="{{profile.stringTension}}">
           <text class="ig-label">拉线磅数</text>
-          <text class="ig-value">{{profile.stringTensionDisplay}}</text>
+          <text class="ig-value">{{profile.stringTensionLabel}}</text>
         </view>
       </view>
       <view wx:else class="empty-hint" bindtap="toggleEdit" data-section="equipment">点此添加</view>
@@ -208,7 +216,9 @@
         </view>
         <view class="ep-row">
           <text class="ep-label">所在城市</text>
-          <input class="ep-input" value="{{editForm.city}}" bindinput="onFieldChange" data-field="city" placeholder="如 南京" />
+          <picker mode="selector" range="{{cityOptions}}" range-key="label" bindchange="onPickerChange" data-field="city">
+            <view class="ep-picker">{{editForm.cityLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
         </view>
         <view class="ep-row">
           <text class="ep-label">擅长打法</text>
@@ -231,7 +241,7 @@
         </view>
         <view class="ig-item" wx:if="{{profile.city}}">
           <text class="ig-label">所在城市</text>
-          <text class="ig-value">{{profile.city}}</text>
+          <text class="ig-value">{{profile.cityLabel}}</text>
         </view>
         <view class="ig-item" wx:if="{{profile.playType}}">
           <text class="ig-label">擅长打法</text>
