@@ -1,8 +1,7 @@
-// pages/profile/profile.js - 卡片独立编辑
+// pages/profile/profile.js - 视觉升级版
 const api = require('../../utils/api');
 const { SKILL_LEVELS, PLAY_FREQUENCY, PLAY_YEARS, PLAY_STYLES, PLAY_TYPES, HANDS } = require('../../utils/constants');
 
-// 各编辑区域的字段映射
 const SECTION_FIELDS = {
   basic:      ['nickName', 'bio'],
   skill:      ['skillLevel', 'playYears', 'playFrequency', 'playStyle'],
@@ -10,7 +9,6 @@ const SECTION_FIELDS = {
   preference: ['preferredVenue', 'city', 'playType', 'hand']
 };
 
-// picker 字段配置
 const PICKER_CONFIG = {
   skillLevel:    { list: SKILL_LEVELS, labelField: 'skillLevelLabel', labelKey: 'label' },
   playYears:     { list: PLAY_YEARS, labelField: 'playYearsLabel', labelKey: 'label' },
@@ -22,6 +20,7 @@ Page({
   data: {
     profile: {},
     totalData: {},
+    loading: true,
     editingSection: null,
     editForm: {},
     skillLevelOptions: SKILL_LEVELS,
@@ -36,11 +35,17 @@ Page({
     this.loadProfile();
   },
 
+  onPullDownRefresh() {
+    this.loadProfile().then(function () {
+      wx.stopPullDownRefresh();
+    });
+  },
+
   async loadProfile() {
+    this.setData({ loading: true });
     const app = getApp();
     await app.ensureLogin();
 
-    wx.showLoading({ title: '加载中...' });
     try {
       const [profile, stats] = await Promise.all([
         api.userAPI.getProfile(),
@@ -54,6 +59,9 @@ Page({
 
       this.setData({
         profile,
+        loading: false,
+        editingSection: null,
+        editForm: {},
         totalData: {
           totalAmount: (stats.totalAmount || 0).toFixed(2),
           totalDuration: Math.round((stats.totalDuration || 0) * 10) / 10,
@@ -62,18 +70,17 @@ Page({
       });
     } catch (err) {
       console.error('加载档案失败:', err);
+      this.setData({ loading: false });
       wx.showToast({ title: '加载失败', icon: 'none' });
     }
-    wx.hideLoading();
   },
 
   getLabel(list, key) {
     if (!key) return '';
-    const item = list.find(function (i) { return i.key === key; });
+    var item = list.find(function (i) { return i.key === key; });
     return item ? item.label : key;
   },
 
-  // 切换某张卡片的编辑状态
   toggleEdit(e) {
     var section = e.currentTarget.dataset.section;
     var form = {};
@@ -81,13 +88,9 @@ Page({
       form.nickName = this.data.profile.nickName || '';
       form.bio = this.data.profile.bio || '';
     } else {
-      // 复制 profile 和标签字段
       var profile = this.data.profile;
       var fields = SECTION_FIELDS[section];
-      fields.forEach(function (f) {
-        form[f] = profile[f];
-      });
-      // 复制对应的标签字段
+      fields.forEach(function (f) { form[f] = profile[f]; });
       if (section === 'skill') {
         form.skillLevelLabel = profile.skillLevelLabel;
         form.playYearsLabel = profile.playYearsLabel;
@@ -98,12 +101,10 @@ Page({
     this.setData({ editingSection: section, editForm: form });
   },
 
-  // 取消编辑
   cancelEdit() {
     this.setData({ editingSection: null, editForm: {} });
   },
 
-  // 输入框变化
   onFieldChange(e) {
     var field = e.currentTarget.dataset.field;
     var value = e.detail.value;
@@ -113,25 +114,22 @@ Page({
     this.setData({ ['editForm.' + field]: value });
   },
 
-  // picker 变化
   onPickerChange(e) {
     var field = e.currentTarget.dataset.field;
     var idx = e.detail.value;
     var cfg = PICKER_CONFIG[field];
     if (cfg) {
       var item = cfg.list[idx];
-      var update = {};
-      update['editForm.' + field] = item.key;
-      update['editForm.' + cfg.labelField] = item.label;
-      this.setData(update);
+      this.setData({
+        ['editForm.' + field]: item.key,
+        ['editForm.' + cfg.labelField]: item.label
+      });
     } else {
-      // playType / hand
       var list = field === 'playType' ? this.data.playTypes : this.data.hands;
       this.setData({ ['editForm.' + field]: list[idx] });
     }
   },
 
-  // 保存某张卡片
   async saveSection(e) {
     var section = e.currentTarget.dataset.section;
     var form = this.data.editForm;
@@ -143,7 +141,6 @@ Page({
       return;
     }
 
-    // 构建 payload
     var payload = {};
     fields.forEach(function (f) {
       if (form[f] !== undefined) payload[f] = form[f];
@@ -152,13 +149,10 @@ Page({
     wx.showLoading({ title: '保存中...' });
     try {
       var updated = await api.userAPI.updateProfile(payload);
-
-      // 刷新显示数据
       var profile = Object.assign({}, this.data.profile);
       fields.forEach(function (f) {
         if (updated[f] !== undefined) profile[f] = updated[f];
       });
-      // 更新标签显示
       labels.forEach(function (l) {
         profile[l.key] = updated[l.key] !== undefined ? updated[l.key] : form[l.key];
         profile[l.label] = l.compute ? l.compute(profile[l.key]) : form[l.label];
@@ -174,7 +168,6 @@ Page({
     wx.hideLoading();
   },
 
-  // 获取各 section 需要刷新的标签字段
   getLabelFields(section) {
     if (section === 'skill') {
       return [
@@ -187,20 +180,8 @@ Page({
     return [];
   },
 
-  computeSkillLevel: function (val) {
-    var item = SKILL_LEVELS.find(function (i) { return i.key === val; });
-    return item ? item.label : val;
-  },
-  computePlayYears: function (val) {
-    var item = PLAY_YEARS.find(function (i) { return i.key === val; });
-    return item ? item.label : val;
-  },
-  computePlayFrequency: function (val) {
-    var item = PLAY_FREQUENCY.find(function (i) { return i.key === val; });
-    return item ? item.label : val;
-  },
-  computePlayStyle: function (val) {
-    var item = PLAY_STYLES.find(function (i) { return i.key === val; });
-    return item ? item.label : val;
-  }
+  computeSkillLevel:    function (v) { var i = SKILL_LEVELS.find(function (x) { return x.key === v; }); return i ? i.label : v; },
+  computePlayYears:     function (v) { var i = PLAY_YEARS.find(function (x) { return x.key === v; }); return i ? i.label : v; },
+  computePlayFrequency: function (v) { var i = PLAY_FREQUENCY.find(function (x) { return x.key === v; }); return i ? i.label : v; },
+  computePlayStyle:     function (v) { var i = PLAY_STYLES.find(function (x) { return x.key === v; }); return i ? i.label : v; }
 });

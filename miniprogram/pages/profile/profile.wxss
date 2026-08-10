@@ -1,275 +1,233 @@
-/* pages/profile/profile.wxss - 卡片独立编辑 */
-.page {
-  padding-bottom: 60rpx;
+/* pages/profile/profile.wxss - 视觉升级版 */
+
+/* === 全局 === */
+.page { padding-bottom: 40rpx; background: #f5f6f8; min-height: 100vh; }
+
+/* ==================== 头部大卡片 ==================== */
+.header-card {
+  margin: 0 20rpx 20rpx;
+  background: linear-gradient(145deg, #1aad19 0%, #0d8f0d 60%, #0a6b0a 100%);
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx 0;
+  box-shadow: 0 8rpx 32rpx rgba(26,173,25,0.25);
 }
 
-/* === 头部 === */
-.profile-header {
-  background: linear-gradient(135deg, #1aad19, #0d8a0d);
-  padding: 50rpx 30rpx 30rpx;
+/* 头像+信息行 */
+.hc-top {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20rpx;
+  align-items: flex-start;
 }
-
-.avatar-wrap {
+.hc-avatar-wrap {
   position: relative;
-  margin-bottom: 16rpx;
+  flex-shrink: 0;
 }
-
-.avatar {
-  width: 140rpx;
-  height: 140rpx;
+.hc-avatar {
+  width: 120rpx; height: 120rpx;
   border-radius: 50%;
-  border: 4rpx solid rgba(255,255,255,0.5);
+  border: 4rpx solid rgba(255,255,255,0.4);
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.15);
 }
-
-.level-badge {
-  position: absolute;
-  bottom: -4rpx;
-  right: -10rpx;
-  padding: 4rpx 16rpx;
-  border-radius: 20rpx;
-  font-size: 20rpx;
-  color: #fff;
-  background: #f39c12;
+.hc-level {
+  position: absolute; bottom: -6rpx; right: -8rpx;
+  padding: 2rpx 14rpx; border-radius: 16rpx;
+  font-size: 20rpx; color: #fff; font-weight: 600;
 }
-.level-beginner    { background: #95a5a6; }
-.level-elementary  { background: #3498db; }
+.level-beginner     { background: #95a5a6; }
+.level-elementary   { background: #3498db; }
 .level-intermediate { background: #f39c12; }
-.level-advanced    { background: #e74c3c; }
-.level-expert      { background: #9b59b6; }
+.level-advanced     { background: #e74c3c; }
+.level-expert       { background: #9b59b6; }
 
-.nickname {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #fff;
+.hc-info {
+  flex: 1; margin-left: 24rpx; padding-top: 6rpx;
 }
-
-.bio {
-  font-size: 24rpx;
-  color: rgba(255,255,255,0.8);
-  margin-top: 8rpx;
-  max-width: 500rpx;
-  text-align: center;
+.hc-nickname {
+  font-size: 36rpx; font-weight: 700; color: #fff;
+  display: block; line-height: 1.4;
 }
-
-.edit-profile-btn {
-  margin-top: 20rpx;
-  padding: 8rpx 32rpx;
-  background: rgba(255,255,255,0.2);
-  border-radius: 20rpx;
-  font-size: 26rpx;
-  color: #fff;
+.hc-bio {
+  font-size: 24rpx; color: rgba(255,255,255,0.75);
+  display: block; margin-top: 6rpx; line-height: 1.5;
 }
-
-/* 基本资料行内编辑（header 区域内） */
-.basic-edit {
-  margin-top: 24rpx;
-  width: 100%;
-  max-width: 580rpx;
+.hc-edit-btn {
+  display: inline-block; margin-top: 12rpx;
+  padding: 6rpx 24rpx; border-radius: 16rpx;
+  font-size: 24rpx; color: #fff;
   background: rgba(255,255,255,0.15);
+  border: 1rpx solid rgba(255,255,255,0.25);
+}
+
+/* 基本资料编辑（header 内嵌） */
+.basic-edit {
+  margin-top: 24rpx; padding: 20rpx;
+  background: rgba(255,255,255,0.12);
   border-radius: 16rpx;
-  padding: 20rpx;
-  box-sizing: border-box;
 }
-
-.basic-edit-row {
-  margin-bottom: 16rpx;
-}
-
+.be-row { margin-bottom: 16rpx; }
 .be-label {
-  font-size: 24rpx;
-  color: rgba(255,255,255,0.7);
+  font-size: 22rpx; color: rgba(255,255,255,0.6);
+  display: block; margin-bottom: 6rpx;
+}
+.be-input {
+  width: 100%; height: 60rpx; box-sizing: border-box;
+  background: rgba(255,255,255,0.92); border-radius: 10rpx;
+  padding: 0 16rpx; font-size: 26rpx; color: #333;
+}
+.be-textarea {
+  width: 100%; min-height: 72rpx; box-sizing: border-box;
+  background: rgba(255,255,255,0.92); border-radius: 10rpx;
+  padding: 10rpx 16rpx; font-size: 24rpx; color: #333;
+}
+.be-counter {
+  font-size: 20rpx; color: rgba(255,255,255,0.5);
+  text-align: right; display: block; margin-top: 4rpx;
+}
+.be-actions {
+  display: flex; justify-content: flex-end; gap: 20rpx;
+}
+.be-cancel {
+  padding: 8rpx 28rpx; border-radius: 20rpx;
+  font-size: 24rpx; color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
+}
+.be-save {
+  padding: 8rpx 28rpx; border-radius: 20rpx;
+  font-size: 24rpx; color: #1aad19; font-weight: 600;
+  background: #fff;
+}
+
+/* 数据指标行 */
+.hc-stats {
+  display: flex; align-items: center;
+  margin-top: 28rpx; padding: 20rpx 0 24rpx;
+  border-top: 1rpx solid rgba(255,255,255,0.12);
+}
+.hcs-item {
+  flex: 1; text-align: center;
+}
+.hcs-num {
+  font-size: 34rpx; font-weight: 700; color: #fff;
   display: block;
+}
+.hcs-label {
+  font-size: 20rpx; color: rgba(255,255,255,0.6);
+  display: block; margin-top: 4rpx;
+}
+.hcs-divider {
+  width: 1rpx; height: 48rpx;
+  background: rgba(255,255,255,0.15);
+}
+
+/* ==================== 骨架屏 ==================== */
+.skeleton-area {
+  padding: 0 20rpx;
+}
+.skeleton-card {
+  background: #fff; border-radius: 16rpx;
+  padding: 28rpx; margin-bottom: 20rpx;
+}
+.sk-title {
+  width: 140rpx; height: 30rpx; border-radius: 8rpx;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shim 1.5s ease-in-out infinite;
+  margin-bottom: 24rpx;
+}
+.sk-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20rpx 16rpx;
+}
+.sk-label {
+  width: 80rpx; height: 20rpx; border-radius: 6rpx;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shim 1.5s ease-in-out infinite;
   margin-bottom: 8rpx;
 }
-
-.be-input {
-  width: 100%;
-  height: 64rpx;
-  background: rgba(255,255,255,0.9);
-  border-radius: 10rpx;
-  padding: 0 16rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-  color: #333;
+.sk-value {
+  width: 120rpx; height: 24rpx; border-radius: 6rpx;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shim 1.5s ease-in-out infinite;
+}
+@keyframes shim {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-.be-textarea {
-  width: 100%;
-  min-height: 80rpx;
-  background: rgba(255,255,255,0.9);
-  border-radius: 10rpx;
-  padding: 12rpx 16rpx;
-  font-size: 26rpx;
-  box-sizing: border-box;
-  color: #333;
-}
-
-.basic-edit-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 24rpx;
-  margin-top: 16rpx;
-}
-
-.be-cancel, .be-save {
-  padding: 8rpx 28rpx;
-  border-radius: 20rpx;
-  font-size: 26rpx;
-}
-
-.be-cancel {
-  color: rgba(255,255,255,0.8);
-  background: rgba(255,255,255,0.15);
-}
-
-.be-save {
-  color: #1aad19;
-  background: #fff;
-  font-weight: 600;
-}
-
-/* === 卡片通用 === */
+/* ==================== 卡片通用 ==================== */
 .card {
   margin: 0 20rpx 20rpx;
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 28rpx;
+  background: #fff; border-radius: 20rpx;
+  padding: 28rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  overflow: hidden;
 }
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20rpx;
+.card-head {
+  display: flex; align-items: center; margin-bottom: 24rpx;
 }
-
-.section-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
+.card-icon { font-size: 28rpx; margin-right: 10rpx; }
+.card-title {
+  font-size: 30rpx; font-weight: 600; color: #1a1a1a;
+  flex: 1;
 }
-
-.section-toggle {
-  font-size: 26rpx;
-  color: #1aad19;
-  padding: 6rpx 20rpx;
-  border-radius: 20rpx;
+.card-toggle {
+  font-size: 24rpx; color: #1aad19;
+  padding: 4rpx 20rpx; border-radius: 16rpx;
   border: 2rpx solid #1aad19;
+  transition: all 0.2s;
+}
+.card-toggle.active {
+  background: #1aad19; color: #fff;
 }
 
-.section-toggle.active {
-  background: #1aad19;
-  color: #fff;
+/* ==================== 编辑面板（带动画） ==================== */
+.edit-panel {
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease;
+}
+.edit-panel.show {
+  max-height: 800rpx; opacity: 1;
+  margin-bottom: 24rpx;
 }
 
-/* === 展示模式 === */
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24rpx 16rpx;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.info-label {
-  font-size: 24rpx;
-  color: #999;
-  margin-bottom: 6rpx;
-}
-
-.info-value {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: 500;
-}
-
-.level-text {
-  color: #1aad19;
-  font-weight: 600;
-}
-
-/* === 编辑模式 === */
-.edit-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.edit-row {
-  display: flex;
-  align-items: center;
+.ep-row {
+  display: flex; align-items: center;
   justify-content: space-between;
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
+  padding: 20rpx 0; border-bottom: 1rpx solid #f0f0f0;
 }
-
-.edit-row:last-child {
-  border-bottom: none;
+.ep-row:last-child { border-bottom: none; }
+.ep-label {
+  font-size: 28rpx; color: #333; flex-shrink: 0; width: 160rpx;
 }
-
-.er-label {
-  font-size: 28rpx;
-  color: #333;
-  flex-shrink: 0;
-  width: 160rpx;
+.ep-input {
+  flex: 1; height: 60rpx; box-sizing: border-box;
+  background: #f7f8fa; border-radius: 10rpx;
+  padding: 0 16rpx; font-size: 26rpx; text-align: right; color: #333;
 }
-
-.er-input {
-  flex: 1;
-  height: 64rpx;
-  background: #f7f8fa;
-  border-radius: 10rpx;
-  padding: 0 16rpx;
-  font-size: 28rpx;
-  text-align: right;
-  box-sizing: border-box;
-  color: #333;
+.ep-picker {
+  flex: 1; display: flex; align-items: center;
+  justify-content: flex-end; height: 60rpx;
+  padding: 0 16rpx; font-size: 26rpx; color: #666;
 }
+.ep-arrow { font-size: 22rpx; color: #ccc; margin-left: 8rpx; }
 
-.er-picker {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 64rpx;
-  padding: 0 16rpx;
-  font-size: 28rpx;
-  color: #666;
+/* ==================== 信息展示网格 ==================== */
+.info-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 28rpx 20rpx;
 }
-
-.er-arrow {
-  font-size: 24rpx;
-  color: #bbb;
-  margin-left: 8rpx;
+.ig-item {
+  display: flex; flex-direction: column;
 }
-
-/* === 数据统计 === */
-.stats-row {
-  display: flex;
-  justify-content: space-around;
-  text-align: center;
+.ig-label {
+  font-size: 22rpx; color: #aaa; margin-bottom: 6rpx; font-weight: 500;
 }
-
-.stats-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.ig-value {
+  font-size: 28rpx; color: #333; font-weight: 500;
 }
-
-.stats-num {
-  font-size: 40rpx;
-  font-weight: 700;
-  color: #1aad19;
+.ig-value.empty {
+  color: #ccc; font-style: italic; font-weight: 400;
 }
-
-.stats-desc {
-  font-size: 22rpx;
-  color: #999;
-  margin-top: 6rpx;
+.level-text {
+  color: #1aad19; font-weight: 700;
 }

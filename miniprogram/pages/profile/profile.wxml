@@ -1,201 +1,243 @@
-<!-- pages/profile/profile.wxml - 个人档案（卡片独立编辑） -->
+<!-- pages/profile/profile.wxml - 视觉升级版 -->
 <view class="page">
-  <!-- 个人信息头部 -->
-  <view class="profile-header">
-    <view class="avatar-wrap">
-      <image class="avatar" src="{{profile.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
-      <view class="level-badge level-{{profile.skillLevel}}">
-        {{profile.skillLevelLabel || '未设置'}}
+
+  <!-- === 头部大卡片 === -->
+  <view class="header-card">
+    <!-- 个人信息行 -->
+    <view class="hc-top">
+      <view class="hc-avatar-wrap">
+        <image class="hc-avatar" src="{{profile.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <view class="hc-level level-{{profile.skillLevel}}">
+          {{profile.skillLevelLabel || '?'}}
+        </view>
+      </view>
+      <view class="hc-info">
+        <text class="hc-nickname">{{profile.nickName || '未设置昵称'}}</text>
+        <text class="hc-bio">{{profile.bio || '介绍一下你对羽毛球的热爱吧~'}}</text>
+        <text class="hc-edit-btn" wx:if="{{editingSection !== 'basic'}}" bindtap="toggleEdit" data-section="basic">✏️ 编辑资料</text>
       </view>
     </view>
-    <text class="nickname">{{profile.nickName || '点击设置昵称'}}</text>
-    <text class="bio">{{profile.bio || '介绍一下你对羽毛球的热爱吧~'}}</text>
 
     <!-- 基本资料行内编辑 -->
     <view wx:if="{{editingSection === 'basic'}}" class="basic-edit">
-      <view class="basic-edit-row">
+      <view class="be-row">
         <text class="be-label">昵称</text>
         <input class="be-input" value="{{editForm.nickName}}" bindinput="onFieldChange" data-field="nickName" placeholder="你的昵称" focus />
       </view>
-      <view class="basic-edit-row">
+      <view class="be-row">
         <text class="be-label">简介</text>
-        <textarea class="be-textarea" value="{{editForm.bio}}" bindinput="onFieldChange" data-field="bio" placeholder="介绍一下自己..." auto-height />
+        <textarea class="be-textarea" value="{{editForm.bio}}" bindinput="onFieldChange" data-field="bio" placeholder="介绍一下自己..." auto-height maxlength="80" />
+        <text class="be-counter">{{(editForm.bio || '').length}}/80</text>
       </view>
-      <view class="basic-edit-actions">
+      <view class="be-actions">
         <text class="be-cancel" bindtap="cancelEdit">取消</text>
         <text class="be-save" bindtap="saveSection" data-section="basic">保存</text>
       </view>
     </view>
 
-    <text class="edit-profile-btn" wx:if="{{editingSection !== 'basic'}}" bindtap="toggleEdit" data-section="basic">✏️ 编辑资料</text>
-  </view>
-
-  <!-- 技术水平 -->
-  <view class="card">
-    <view class="section-header">
-      <text class="section-title">🏅 技术水平</text>
-      <text class="section-toggle {{editingSection === 'skill' ? 'active' : ''}}" bindtap="{{editingSection === 'skill' ? 'saveSection' : 'toggleEdit'}}" data-section="skill">
-        {{editingSection === 'skill' ? '完成' : '编辑'}}
-      </text>
-    </view>
-    <view wx:if="{{editingSection === 'skill'}}" class="edit-list">
-      <view class="edit-row">
-        <text class="er-label">水平等级</text>
-        <picker mode="selector" range="{{skillLevelOptions}}" range-key="label" bindchange="onPickerChange" data-field="skillLevel" data-label-field="skillLevelLabel" data-list="skillLevel">
-          <view class="er-picker">{{editForm.skillLevelLabel || '请选择'}}<text class="er-arrow">▾</text></view>
-        </picker>
+    <!-- 数据指标行 -->
+    <view class="hc-stats">
+      <view class="hcs-item">
+        <text class="hcs-num">{{totalData.totalAmount || '--'}}</text>
+        <text class="hcs-label">累计消费</text>
       </view>
-      <view class="edit-row">
-        <text class="er-label">球龄</text>
-        <picker mode="selector" range="{{playYearsOptions}}" range-key="label" bindchange="onPickerChange" data-field="playYears" data-label-field="playYearsLabel" data-list="playYears">
-          <view class="er-picker">{{editForm.playYearsLabel || '请选择'}}<text class="er-arrow">▾</text></view>
-        </picker>
+      <view class="hcs-divider"></view>
+      <view class="hcs-item">
+        <text class="hcs-num">{{totalData.totalDuration || '--'}}</text>
+        <text class="hcs-label">运动时长(h)</text>
       </view>
-      <view class="edit-row">
-        <text class="er-label">打球频率</text>
-        <picker mode="selector" range="{{playFrequencyOptions}}" range-key="label" bindchange="onPickerChange" data-field="playFrequency" data-label-field="playFrequencyLabel" data-list="playFrequency">
-          <view class="er-picker">{{editForm.playFrequencyLabel || '请选择'}}<text class="er-arrow">▾</text></view>
-        </picker>
-      </view>
-      <view class="edit-row">
-        <text class="er-label">打球类型</text>
-        <picker mode="selector" range="{{playStyleOptions}}" range-key="label" bindchange="onPickerChange" data-field="playStyle" data-label-field="playStyleLabel" data-list="playStyle">
-          <view class="er-picker">{{editForm.playStyleLabel || '请选择'}}<text class="er-arrow">▾</text></view>
-        </picker>
-      </view>
-    </view>
-    <view wx:else class="info-grid">
-      <view class="info-item">
-        <text class="info-label">水平等级</text>
-        <text class="info-value level-text">{{profile.skillLevelLabel || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">球龄</text>
-        <text class="info-value">{{profile.playYearsLabel || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">打球频率</text>
-        <text class="info-value">{{profile.playFrequencyLabel || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">打球类型</text>
-        <text class="info-value">{{profile.playStyleLabel || '未设置'}}</text>
+      <view class="hcs-divider"></view>
+      <view class="hcs-item">
+        <text class="hcs-num">{{totalData.totalCount || '--'}}</text>
+        <text class="hcs-label">活动次数</text>
       </view>
     </view>
   </view>
 
-  <!-- 常用装备 -->
-  <view class="card">
-    <view class="section-header">
-      <text class="section-title">🎯 常用装备</text>
-      <text class="section-toggle {{editingSection === 'equipment' ? 'active' : ''}}" bindtap="{{editingSection === 'equipment' ? 'saveSection' : 'toggleEdit'}}" data-section="equipment">
-        {{editingSection === 'equipment' ? '完成' : '编辑'}}
-      </text>
-    </view>
-    <view wx:if="{{editingSection === 'equipment'}}" class="edit-list">
-      <view class="edit-row">
-        <text class="er-label">主力球拍</text>
-        <input class="er-input" value="{{editForm.mainRacket}}" bindinput="onFieldChange" data-field="mainRacket" placeholder="如：Yonex 天斧100ZZ" />
-      </view>
-      <view class="edit-row">
-        <text class="er-label">球鞋</text>
-        <input class="er-input" value="{{editForm.shoes}}" bindinput="onFieldChange" data-field="shoes" placeholder="如：Yonex 65Z3" />
-      </view>
-      <view class="edit-row">
-        <text class="er-label">常用球</text>
-        <input class="er-input" value="{{editForm.shuttleBrand}}" bindinput="onFieldChange" data-field="shuttleBrand" placeholder="如：Yonex AS50" />
-      </view>
-      <view class="edit-row">
-        <text class="er-label">拉线磅数</text>
-        <input class="er-input" type="digit" value="{{editForm.stringTension}}" bindinput="onFieldChange" data-field="stringTension" placeholder="如：26" />
-      </view>
-    </view>
-    <view wx:else class="info-grid">
-      <view class="info-item">
-        <text class="info-label">主力球拍</text>
-        <text class="info-value">{{profile.mainRacket || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">球鞋</text>
-        <text class="info-value">{{profile.shoes || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">常用球</text>
-        <text class="info-value">{{profile.shuttleBrand || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">拉线磅数</text>
-        <text class="info-value">{{profile.stringTension ? profile.stringTension + '磅' : '未设置'}}</text>
+  <!-- 骨架屏 -->
+  <view wx:if="{{loading}}" class="skeleton-area">
+    <view wx:for="{{[1,2,3]}}" wx:key="*this" class="skeleton-card">
+      <view class="sk-title"></view>
+      <view class="sk-grid">
+        <block wx:for="{{[1,2,3,4]}}" wx:key="*this">
+          <view class="sk-item">
+            <view class="sk-label"></view>
+            <view class="sk-value"></view>
+          </view>
+        </block>
       </view>
     </view>
   </view>
 
-  <!-- 打球偏好 -->
-  <view class="card">
-    <view class="section-header">
-      <text class="section-title">📍 打球偏好</text>
-      <text class="section-toggle {{editingSection === 'preference' ? 'active' : ''}}" bindtap="{{editingSection === 'preference' ? 'saveSection' : 'toggleEdit'}}" data-section="preference">
-        {{editingSection === 'preference' ? '完成' : '编辑'}}
-      </text>
-    </view>
-    <view wx:if="{{editingSection === 'preference'}}" class="edit-list">
-      <view class="edit-row">
-        <text class="er-label">常用球馆</text>
-        <input class="er-input" value="{{editForm.preferredVenue}}" bindinput="onFieldChange" data-field="preferredVenue" placeholder="如：XX羽毛球馆" />
-      </view>
-      <view class="edit-row">
-        <text class="er-label">所在城市</text>
-        <input class="er-input" value="{{editForm.city}}" bindinput="onFieldChange" data-field="city" placeholder="如：南京" />
-      </view>
-      <view class="edit-row">
-        <text class="er-label">擅长打法</text>
-        <picker mode="selector" range="{{playTypes}}" bindchange="onPickerChange" data-field="playType">
-          <view class="er-picker">{{editForm.playType || '请选择'}}<text class="er-arrow">▾</text></view>
-        </picker>
-      </view>
-      <view class="edit-row">
-        <text class="er-label">惯用手</text>
-        <picker mode="selector" range="{{hands}}" bindchange="onPickerChange" data-field="hand">
-          <view class="er-picker">{{editForm.hand || '请选择'}}<text class="er-arrow">▾</text></view>
-        </picker>
-      </view>
-    </view>
-    <view wx:else class="info-grid">
-      <view class="info-item">
-        <text class="info-label">常用球馆</text>
-        <text class="info-value">{{profile.preferredVenue || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">所在城市</text>
-        <text class="info-value">{{profile.city || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">擅长打法</text>
-        <text class="info-value">{{profile.playType || '未设置'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">惯用手</text>
-        <text class="info-value">{{profile.hand || '未设置'}}</text>
-      </view>
-    </view>
-  </view>
+  <!-- 实际内容 -->
+  <view wx:else>
 
-  <!-- 个人数据 -->
-  <view class="card">
-    <view class="section-title">📈 我的数据</view>
-    <view class="stats-row">
-      <view class="stats-item">
-        <text class="stats-num">{{totalData.totalAmount || '0'}}</text>
-        <text class="stats-desc">累计消费(元)</text>
+    <!-- 技术水平 -->
+    <view class="card">
+      <view class="card-head">
+        <text class="card-icon">🏅</text>
+        <text class="card-title">技术水平</text>
+        <text class="card-toggle {{editingSection === 'skill' ? 'active' : ''}}"
+              bindtap="{{editingSection === 'skill' ? 'saveSection' : 'toggleEdit'}}"
+              data-section="skill">
+          {{editingSection === 'skill' ? '完成' : '编辑'}}
+        </text>
       </view>
-      <view class="stats-item">
-        <text class="stats-num">{{totalData.totalDuration || '0'}}</text>
-        <text class="stats-desc">累计时长(小时)</text>
+
+      <!-- 编辑态 -->
+      <view class="edit-panel {{editingSection === 'skill' ? 'show' : ''}}">
+        <view class="ep-row">
+          <text class="ep-label">水平等级</text>
+          <picker mode="selector" range="{{skillLevelOptions}}" range-key="label" bindchange="onPickerChange" data-field="skillLevel" data-label-field="skillLevelLabel" data-list="skillLevel">
+            <view class="ep-picker">{{editForm.skillLevelLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">球龄</text>
+          <picker mode="selector" range="{{playYearsOptions}}" range-key="label" bindchange="onPickerChange" data-field="playYears" data-label-field="playYearsLabel" data-list="playYears">
+            <view class="ep-picker">{{editForm.playYearsLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">打球频率</text>
+          <picker mode="selector" range="{{playFrequencyOptions}}" range-key="label" bindchange="onPickerChange" data-field="playFrequency" data-label-field="playFrequencyLabel" data-list="playFrequency">
+            <view class="ep-picker">{{editForm.playFrequencyLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">打球类型</text>
+          <picker mode="selector" range="{{playStyleOptions}}" range-key="label" bindchange="onPickerChange" data-field="playStyle" data-label-field="playStyleLabel" data-list="playStyle">
+            <view class="ep-picker">{{editForm.playStyleLabel || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
+        </view>
       </view>
-      <view class="stats-item">
-        <text class="stats-num">{{totalData.totalCount || '0'}}</text>
-        <text class="stats-desc">总活动次数</text>
+
+      <!-- 展示态 -->
+      <view class="info-grid">
+        <view class="ig-item">
+          <text class="ig-label">水平等级</text>
+          <text class="ig-value level-text">{{profile.skillLevelLabel || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">球龄</text>
+          <text class="ig-value {{profile.playYears ? '' : 'empty'}}">{{profile.playYearsLabel || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">打球频率</text>
+          <text class="ig-value {{profile.playFrequency ? '' : 'empty'}}">{{profile.playFrequencyLabel || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">打球类型</text>
+          <text class="ig-value {{profile.playStyle ? '' : 'empty'}}">{{profile.playStyleLabel || '待填写'}}</text>
+        </view>
       </view>
     </view>
+
+    <!-- 常用装备 -->
+    <view class="card">
+      <view class="card-head">
+        <text class="card-icon">🎯</text>
+        <text class="card-title">常用装备</text>
+        <text class="card-toggle {{editingSection === 'equipment' ? 'active' : ''}}"
+              bindtap="{{editingSection === 'equipment' ? 'saveSection' : 'toggleEdit'}}"
+              data-section="equipment">
+          {{editingSection === 'equipment' ? '完成' : '编辑'}}
+        </text>
+      </view>
+
+      <view class="edit-panel {{editingSection === 'equipment' ? 'show' : ''}}">
+        <view class="ep-row">
+          <text class="ep-label">主力球拍</text>
+          <input class="ep-input" value="{{editForm.mainRacket}}" bindinput="onFieldChange" data-field="mainRacket" placeholder="如 Yonex 天斧100ZZ" />
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">球鞋</text>
+          <input class="ep-input" value="{{editForm.shoes}}" bindinput="onFieldChange" data-field="shoes" placeholder="如 Yonex 65Z3" />
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">常用球</text>
+          <input class="ep-input" value="{{editForm.shuttleBrand}}" bindinput="onFieldChange" data-field="shuttleBrand" placeholder="如 Yonex AS50" />
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">拉线磅数</text>
+          <input class="ep-input" type="digit" value="{{editForm.stringTension}}" bindinput="onFieldChange" data-field="stringTension" placeholder="如 26" />
+        </view>
+      </view>
+
+      <view class="info-grid">
+        <view class="ig-item">
+          <text class="ig-label">主力球拍</text>
+          <text class="ig-value {{profile.mainRacket ? '' : 'empty'}}">{{profile.mainRacket || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">球鞋</text>
+          <text class="ig-value {{profile.shoes ? '' : 'empty'}}">{{profile.shoes || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">常用球</text>
+          <text class="ig-value {{profile.shuttleBrand ? '' : 'empty'}}">{{profile.shuttleBrand || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">拉线磅数</text>
+          <text class="ig-value {{profile.stringTension ? '' : 'empty'}}">{{profile.stringTension ? profile.stringTension + '磅' : '待填写'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 打球偏好 -->
+    <view class="card">
+      <view class="card-head">
+        <text class="card-icon">📍</text>
+        <text class="card-title">打球偏好</text>
+        <text class="card-toggle {{editingSection === 'preference' ? 'active' : ''}}"
+              bindtap="{{editingSection === 'preference' ? 'saveSection' : 'toggleEdit'}}"
+              data-section="preference">
+          {{editingSection === 'preference' ? '完成' : '编辑'}}
+        </text>
+      </view>
+
+      <view class="edit-panel {{editingSection === 'preference' ? 'show' : ''}}">
+        <view class="ep-row">
+          <text class="ep-label">常用球馆</text>
+          <input class="ep-input" value="{{editForm.preferredVenue}}" bindinput="onFieldChange" data-field="preferredVenue" placeholder="如 XX羽毛球馆" />
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">所在城市</text>
+          <input class="ep-input" value="{{editForm.city}}" bindinput="onFieldChange" data-field="city" placeholder="如 南京" />
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">擅长打法</text>
+          <picker mode="selector" range="{{playTypes}}" bindchange="onPickerChange" data-field="playType">
+            <view class="ep-picker">{{editForm.playType || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
+        </view>
+        <view class="ep-row">
+          <text class="ep-label">惯用手</text>
+          <picker mode="selector" range="{{hands}}" bindchange="onPickerChange" data-field="hand">
+            <view class="ep-picker">{{editForm.hand || '请选择'}}<text class="ep-arrow">▾</text></view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="info-grid">
+        <view class="ig-item">
+          <text class="ig-label">常用球馆</text>
+          <text class="ig-value {{profile.preferredVenue ? '' : 'empty'}}">{{profile.preferredVenue || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">所在城市</text>
+          <text class="ig-value {{profile.city ? '' : 'empty'}}">{{profile.city || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">擅长打法</text>
+          <text class="ig-value {{profile.playType ? '' : 'empty'}}">{{profile.playType || '待填写'}}</text>
+        </view>
+        <view class="ig-item">
+          <text class="ig-label">惯用手</text>
+          <text class="ig-value {{profile.hand ? '' : 'empty'}}">{{profile.hand || '待填写'}}</text>
+        </view>
+      </view>
+    </view>
+
   </view>
 </view>

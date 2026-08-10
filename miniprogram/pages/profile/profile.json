@@ -1,4 +1,6 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "个人档案"
+  "navigationBarTitleText": "个人档案",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f5f6f8"
 }
