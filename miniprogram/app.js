@@ -3,11 +3,9 @@ const api = require('./utils/api');
 
 App({
   onLaunch() {
-    // 初始化云开发（callContainer 调用云托管必需）
     wx.cloud.init({
       env: 'prod-d5gqebf4i52aaa93a'
     });
-
     api.initToken();
     this.autoLogin();
   },
@@ -15,56 +13,36 @@ App({
   globalData: {
     userInfo: null,
     token: null,
-    isLoggedIn: false
+    isLoggedIn: false,
+    needsSetup: false
   },
 
-  // 自动登录
   async autoLogin() {
     const token = api.getToken();
     if (token) {
-      // 已有 token，尝试加载用户信息
       try {
         const user = await api.userAPI.getProfile();
         this.globalData.userInfo = user || {};
         this.globalData.isLoggedIn = true;
+        this.globalData.needsSetup = !(user && user.nickName);
         return;
       } catch (e) {
-        // token 过期，清除重新登录
         api.clearToken();
       }
     }
 
-    // 无 token 或过期，重新登录
     try {
-      // 1. 获取微信用户信息（头像、昵称）
-      const wxProfile = await this.getWxProfile();
-
-      // 2. 登录并传递微信资料
-      const data = await api.login(wxProfile);
+      // 仅通过 wx.login 获取 code，头像昵称让用户主动设置
+      const data = await api.login();
       api.saveToken(data.token);
       this.globalData.userInfo = data.user || {};
       this.globalData.isLoggedIn = true;
+      this.globalData.needsSetup = !(data.user && data.user.nickName);
     } catch (err) {
       console.error('登录失败:', err);
     }
   },
 
-  // 获取微信头像昵称（静默获取，小程序启动时自动调用）
-  getWxProfile() {
-    return new Promise((resolve) => {
-      wx.getUserInfo({
-        success: (res) => {
-          resolve({
-            nickName: res.userInfo.nickName || '',
-            avatarUrl: res.userInfo.avatarUrl || ''
-          });
-        },
-        fail: () => resolve({ nickName: '', avatarUrl: '' })
-      });
-    });
-  },
-
-  // 确保已登录（页面调用）
   async ensureLogin() {
     if (!this.globalData.isLoggedIn) {
       await this.autoLogin();

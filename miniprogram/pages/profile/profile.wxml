@@ -18,11 +18,18 @@
       </view>
     </view>
 
-    <!-- 基本资料行内编辑 -->
+    <!-- 基本资料行内编辑（含微信头像昵称） -->
     <view wx:if="{{editingSection === 'basic'}}" class="basic-edit">
+      <!-- 头像选择 -->
+      <view class="be-avatar-row">
+        <button class="be-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image class="be-avatar-preview" src="{{editForm.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <text class="be-avatar-hint">点击更换头像</text>
+        </button>
+      </view>
       <view class="be-row">
         <text class="be-label">昵称</text>
-        <input class="be-input" value="{{editForm.nickName}}" bindinput="onFieldChange" data-field="nickName" placeholder="你的昵称" focus />
+        <input class="be-input" type="nickname" value="{{editForm.nickName}}" bindinput="onFieldChange" data-field="nickName" placeholder="你的昵称" focus="{{false}}" />
       </view>
       <view class="be-row">
         <text class="be-label">简介</text>
@@ -84,7 +91,6 @@
         </text>
       </view>
 
-      <!-- 编辑态 -->
       <view class="edit-panel {{editingSection === 'skill' ? 'show' : ''}}">
         <view class="ep-row">
           <text class="ep-label">水平等级</text>
@@ -112,7 +118,6 @@
         </view>
       </view>
 
-      <!-- 展示态 -->
       <view class="info-grid">
         <view class="ig-item">
           <text class="ig-label">水平等级</text>

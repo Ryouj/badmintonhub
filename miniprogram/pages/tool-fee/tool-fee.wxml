@@ -1,26 +1,111 @@
 <!-- pages/tool-fee/tool-fee.wxml -->
 <view class="page">
-  <!-- 总费用 -->
+  <!-- 总费用（三模式） -->
   <view class="card">
     <view class="card-title">💰 总费用</view>
-    <view class="amount-input-row">
-      <text class="currency">¥</text>
-      <input class="amount-input" type="digit" value="{{totalAmount}}" bindinput="onTotalInput" placeholder="0.00" />
+
+    <!-- 模式切换 -->
+    <view class="mode-tabs">
+      <view class="mode-tab {{feeMode === 'direct' ? 'active' : ''}}" bindtap="switchMode" data-mode="direct">直接输入</view>
+      <view class="mode-tab {{feeMode === 'courtBall' ? 'active' : ''}}" bindtap="switchMode" data-mode="courtBall">场地+球费</view>
+      <view class="mode-tab {{feeMode === 'ballOnly' ? 'active' : ''}}" bindtap="switchMode" data-mode="ballOnly">仅球费</view>
     </view>
-    <view class="detail-toggle" bindtap="toggleDetail">
-      <text>{{showDetail ? '收起明细' : '展开明细（分项输入）'}}</text>
-    </view>
-    <block wx:if="{{showDetail}}">
-      <view class="detail-list">
-        <view class="detail-row" wx:for="{{detailItems}}" wx:key="key">
-          <text class="detail-label">{{item.label}}</text>
-          <view class="detail-input-box">
-            <text class="detail-currency">¥</text>
-            <input class="detail-input" type="digit" data-idx="{{index}}" bindinput="onDetailInput" value="{{item.amount}}" placeholder="0" />
+
+    <!-- 模式1：直接输入 -->
+    <view wx:if="{{feeMode === 'direct'}}" class="mode-panel">
+      <view class="amount-input-row">
+        <text class="currency">¥</text>
+        <input class="amount-input" type="digit" value="{{totalAmount}}" bindinput="onTotalInput" placeholder="0.00" />
+      </view>
+      <view class="detail-toggle" bindtap="toggleDetail">
+        <text>{{showDetail ? '收起明细' : '展开明细（分项输入）'}}</text>
+      </view>
+      <block wx:if="{{showDetail}}">
+        <view class="detail-list">
+          <view class="detail-row" wx:for="{{detailItems}}" wx:key="key">
+            <text class="detail-label">{{item.label}}</text>
+            <view class="detail-input-box">
+              <text class="detail-currency">¥</text>
+              <input class="detail-input" type="digit" data-idx="{{index}}" bindinput="onDetailInput" value="{{item.amount}}" placeholder="0" />
+            </view>
           </view>
         </view>
+      </block>
+    </view>
+
+    <!-- 模式2：场地费 + 球费 -->
+    <view wx:if="{{feeMode === 'courtBall'}}" class="mode-panel">
+      <view class="mode-row">
+        <text class="mode-label">场地费</text>
+        <view class="mode-input-wrap">
+          <text class="mode-prefix">¥</text>
+          <input class="mode-input" type="digit" value="{{courtFee}}" bindinput="onCourtFeeInput" placeholder="0" />
+        </view>
       </view>
-    </block>
+      <!-- 球费计算 -->
+      <view class="mode-divider"><text>🏸 球费计算</text></view>
+      <view class="mode-row">
+        <text class="mode-label">计算方式</text>
+        <view class="unit-toggle">
+          <view class="unit-tab {{shuttleUnit === 'bucket' ? 'active' : ''}}" bindtap="switchUnit" data-unit="bucket">按桶</view>
+          <view class="unit-tab {{shuttleUnit === 'piece' ? 'active' : ''}}" bindtap="switchUnit" data-unit="piece">按个</view>
+        </view>
+      </view>
+      <view class="mode-row">
+        <text class="mode-label">{{shuttleUnit === 'bucket' ? '桶数' : '个数'}}</text>
+        <view class="mode-input-wrap">
+          <input class="mode-input mode-input-sm" type="digit" value="{{shuttleQuantity}}" bindinput="onShuttleQuantityInput" placeholder="0" />
+          <text class="mode-suffix">{{shuttleUnit === 'bucket' ? '桶' : '个'}}</text>
+        </view>
+      </view>
+      <view class="mode-row">
+        <text class="mode-label">单价</text>
+        <view class="mode-input-wrap">
+          <text class="mode-prefix">¥</text>
+          <input class="mode-input mode-input-sm" type="digit" value="{{shuttleUnitPrice}}" bindinput="onShuttleUnitPriceInput" placeholder="0" />
+          <text class="mode-suffix">/{{shuttleUnit === 'bucket' ? '桶' : '个'}}</text>
+        </view>
+      </view>
+      <view class="mode-row mode-sub">
+        <text class="mode-label">球费小计</text>
+        <text class="mode-value">¥{{computedShuttleFee}}</text>
+      </view>
+      <view class="mode-total-line">
+        <text class="mode-total-label">合计</text>
+        <text class="mode-total-value">¥{{computedTotal}}</text>
+      </view>
+    </view>
+
+    <!-- 模式3：仅球费 -->
+    <view wx:if="{{feeMode === 'ballOnly'}}" class="mode-panel">
+      <view class="mode-divider"><text>🏸 球费计算</text></view>
+      <view class="mode-row">
+        <text class="mode-label">计算方式</text>
+        <view class="unit-toggle">
+          <view class="unit-tab {{shuttleUnit === 'bucket' ? 'active' : ''}}" bindtap="switchUnit" data-unit="bucket">按桶</view>
+          <view class="unit-tab {{shuttleUnit === 'piece' ? 'active' : ''}}" bindtap="switchUnit" data-unit="piece">按个</view>
+        </view>
+      </view>
+      <view class="mode-row">
+        <text class="mode-label">{{shuttleUnit === 'bucket' ? '桶数' : '个数'}}</text>
+        <view class="mode-input-wrap">
+          <input class="mode-input mode-input-sm" type="digit" value="{{shuttleQuantity}}" bindinput="onShuttleQuantityInput" placeholder="0" />
+          <text class="mode-suffix">{{shuttleUnit === 'bucket' ? '桶' : '个'}}</text>
+        </view>
+      </view>
+      <view class="mode-row">
+        <text class="mode-label">单价</text>
+        <view class="mode-input-wrap">
+          <text class="mode-prefix">¥</text>
+          <input class="mode-input mode-input-sm" type="digit" value="{{shuttleUnitPrice}}" bindinput="onShuttleUnitPriceInput" placeholder="0" />
+          <text class="mode-suffix">/{{shuttleUnit === 'bucket' ? '桶' : '个'}}</text>
+        </view>
+      </view>
+      <view class="mode-total-line">
+        <text class="mode-total-label">球费合计</text>
+        <text class="mode-total-value">¥{{computedShuttleFee}}</text>
+      </view>
+    </view>
   </view>
 
   <!-- 人数（直接输入） -->

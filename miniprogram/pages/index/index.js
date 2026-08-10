@@ -6,6 +6,7 @@ const { BILL_CATEGORIES } = require('../../utils/constants');
 Page({
   data: {
     userInfo: {},
+    showSetup: false,
     monthStats: {
       totalAmount: '0.00',
       totalDuration: 0,
@@ -20,9 +21,12 @@ Page({
   },
 
   async loadData() {
-    const app = getApp();
+    var app = getApp();
     await app.ensureLogin();
-    this.setData({ userInfo: app.globalData.userInfo || {} });
+    this.setData({
+      userInfo: app.globalData.userInfo || {},
+      showSetup: app.globalData.needsSetup
+    });
     
     wx.showLoading({ title: '加载中...' });
     try {

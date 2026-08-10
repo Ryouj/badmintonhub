@@ -1,9 +1,9 @@
-// pages/profile/profile.js - 视觉升级版
+// pages/profile/profile.js - 视觉升级版 + 微信头像昵称
 const api = require('../../utils/api');
 const { SKILL_LEVELS, PLAY_FREQUENCY, PLAY_YEARS, PLAY_STYLES, PLAY_TYPES, HANDS } = require('../../utils/constants');
 
 const SECTION_FIELDS = {
-  basic:      ['nickName', 'bio'],
+  basic:      ['nickName', 'bio', 'avatarUrl'],
   skill:      ['skillLevel', 'playYears', 'playFrequency', 'playStyle'],
   equipment:  ['mainRacket', 'shoes', 'shuttleBrand', 'stringTension'],
   preference: ['preferredVenue', 'city', 'playType', 'hand']
@@ -36,6 +36,7 @@ Page({
   },
 
   onPullDownRefresh() {
+    var that = this;
     this.loadProfile().then(function () {
       wx.stopPullDownRefresh();
     });
@@ -43,14 +44,16 @@ Page({
 
   async loadProfile() {
     this.setData({ loading: true });
-    const app = getApp();
+    var app = getApp();
     await app.ensureLogin();
 
     try {
-      const [profile, stats] = await Promise.all([
+      var results = await Promise.all([
         api.userAPI.getProfile(),
         api.statsAPI.summary('all')
       ]);
+      var profile = results[0];
+      var stats = results[1];
 
       profile.skillLevelLabel = this.getLabel(SKILL_LEVELS, profile.skillLevel);
       profile.playFrequencyLabel = this.getLabel(PLAY_FREQUENCY, profile.playFrequency);
@@ -58,7 +61,7 @@ Page({
       profile.playStyleLabel = this.getLabel(PLAY_STYLES, profile.playStyle);
 
       this.setData({
-        profile,
+        profile: profile,
         loading: false,
         editingSection: null,
         editForm: {},
@@ -68,6 +71,9 @@ Page({
           totalCount: stats.activityCount || 0
         }
       });
+
+      app.globalData.userInfo = profile;
+      app.globalData.needsSetup = !(profile && profile.nickName);
     } catch (err) {
       console.error('加载档案失败:', err);
       this.setData({ loading: false });
@@ -75,20 +81,21 @@ Page({
     }
   },
 
-  getLabel(list, key) {
+  getLabel: function (list, key) {
     if (!key) return '';
     var item = list.find(function (i) { return i.key === key; });
     return item ? item.label : key;
   },
 
-  toggleEdit(e) {
+  toggleEdit: function (e) {
     var section = e.currentTarget.dataset.section;
     var form = {};
+    var profile = this.data.profile;
     if (section === 'basic') {
-      form.nickName = this.data.profile.nickName || '';
-      form.bio = this.data.profile.bio || '';
+      form.nickName = profile.nickName || '';
+      form.bio = profile.bio || '';
+      form.avatarUrl = profile.avatarUrl || '';
     } else {
-      var profile = this.data.profile;
       var fields = SECTION_FIELDS[section];
       fields.forEach(function (f) { form[f] = profile[f]; });
       if (section === 'skill') {
@@ -101,11 +108,38 @@ Page({
     this.setData({ editingSection: section, editForm: form });
   },
 
-  cancelEdit() {
+  cancelEdit: function () {
     this.setData({ editingSection: null, editForm: {} });
   },
 
-  onFieldChange(e) {
+  // 微信头像选择（open-type="chooseAvatar" 回调）
+  onChooseAvatar: function (e) {
+    var avatarUrl = e.detail.avatarUrl;
+    this.setData({ 'editForm.avatarUrl': avatarUrl });
+    this.uploadAvatar(avatarUrl);
+  },
+
+  // 上传头像到云存储
+  uploadAvatar: function (tempPath) {
+    var that = this;
+    wx.showLoading({ title: '上传头像...' });
+    var cloudPath = 'avatars/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.png';
+    wx.cloud.uploadFile({
+      cloudPath: cloudPath,
+      filePath: tempPath,
+      success: function (res) {
+        that.setData({ 'editForm.avatarUrl': res.fileID });
+        wx.hideLoading();
+      },
+      fail: function (err) {
+        console.error('头像上传失败:', err);
+        wx.hideLoading();
+        wx.showToast({ title: '头像上传失败', icon: 'none' });
+      }
+    });
+  },
+
+  onFieldChange: function (e) {
     var field = e.currentTarget.dataset.field;
     var value = e.detail.value;
     if (field === 'stringTension') {
@@ -114,7 +148,7 @@ Page({
     this.setData({ ['editForm.' + field]: value });
   },
 
-  onPickerChange(e) {
+  onPickerChange: function (e) {
     var field = e.currentTarget.dataset.field;
     var idx = e.detail.value;
     var cfg = PICKER_CONFIG[field];
@@ -130,11 +164,11 @@ Page({
     }
   },
 
-  async saveSection(e) {
+  saveSection: async function (e) {
+    var that = this;
     var section = e.currentTarget.dataset.section;
     var form = this.data.editForm;
     var fields = SECTION_FIELDS[section];
-    var labels = this.getLabelFields(section);
 
     if (section === 'basic' && !form.nickName) {
       wx.showToast({ title: '请填写昵称', icon: 'none' });
@@ -153,35 +187,27 @@ Page({
       fields.forEach(function (f) {
         if (updated[f] !== undefined) profile[f] = updated[f];
       });
-      labels.forEach(function (l) {
-        profile[l.key] = updated[l.key] !== undefined ? updated[l.key] : form[l.key];
-        profile[l.label] = l.compute ? l.compute(profile[l.key]) : form[l.label];
-      });
+
+      // 处理 picker label 字段
+      if (section === 'skill') {
+        ['skillLevel', 'playYears', 'playFrequency', 'playStyle'].forEach(function (k) {
+          var cfg = PICKER_CONFIG[k];
+          if (cfg) {
+            profile[cfg.labelField] = updated[cfg.labelField] !== undefined
+              ? updated[cfg.labelField]
+              : (form[cfg.labelField] || '');
+          }
+        });
+      }
 
       wx.showToast({ title: '保存成功', icon: 'success' });
       this.setData({ editingSection: null, editForm: {}, profile: profile });
       getApp().globalData.userInfo = profile;
+      getApp().globalData.needsSetup = !profile.nickName;
     } catch (err) {
       wx.showToast({ title: '保存失败', icon: 'none' });
       console.error('保存失败:', err);
     }
     wx.hideLoading();
-  },
-
-  getLabelFields(section) {
-    if (section === 'skill') {
-      return [
-        { key: 'skillLevel', label: 'skillLevelLabel', compute: this.computeSkillLevel },
-        { key: 'playYears', label: 'playYearsLabel', compute: this.computePlayYears },
-        { key: 'playFrequency', label: 'playFrequencyLabel', compute: this.computePlayFrequency },
-        { key: 'playStyle', label: 'playStyleLabel', compute: this.computePlayStyle }
-      ];
-    }
-    return [];
-  },
-
-  computeSkillLevel:    function (v) { var i = SKILL_LEVELS.find(function (x) { return x.key === v; }); return i ? i.label : v; },
-  computePlayYears:     function (v) { var i = PLAY_YEARS.find(function (x) { return x.key === v; }); return i ? i.label : v; },
-  computePlayFrequency: function (v) { var i = PLAY_FREQUENCY.find(function (x) { return x.key === v; }); return i ? i.label : v; },
-  computePlayStyle:     function (v) { var i = PLAY_STYLES.find(function (x) { return x.key === v; }); return i ? i.label : v; }
+  }
 });

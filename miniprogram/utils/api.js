@@ -113,15 +113,10 @@ function del(path) {
 
 // === 业务 API ===
 
-// 微信登录
-async function login(wxProfile) {
-  if (!wxProfile) wxProfile = {};
+// 微信登录（头像昵称由用户主动设置，不在登录时获取）
+async function login() {
   var res = await wx.login();
-  return request('POST', '/api/login', {
-    code: res.code,
-    nickName: wxProfile.nickName || '',
-    avatarUrl: wxProfile.avatarUrl || ''
-  });
+  return request('POST', '/api/login', { code: res.code });
 }
 
 // 用户
