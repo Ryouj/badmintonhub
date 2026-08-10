@@ -1,6 +1,9 @@
 {
   "libVersion": "3.17.1",
   "projectname": "badmintonhub",
+  "cloud": {
+    "env": "prod-d5gqebf4i52aaa93a"
+  },
   "setting": {
     "urlCheck": false,
     "coverView": true,

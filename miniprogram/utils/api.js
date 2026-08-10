@@ -28,8 +28,16 @@ function getToken() {
 
 // 通用请求（callContainer 内网调用）
 function request(method, path, data) {
-  return new Promise((resolve, reject) => {
-    const header = { 'Content-Type': 'application/json' };
+  return new Promise(function (resolve, reject) {
+    // 检查云能力是否可用
+    if (!wx.cloud || !wx.cloud.callContainer) {
+      console.error('[api] wx.cloud 不可用，请检查项目配置 cloud:true 及基础库版本');
+      wx.showToast({ title: '云服务未初始化', icon: 'none' });
+      reject(new Error('wx.cloud 不可用'));
+      return;
+    }
+
+    var header = { 'Content-Type': 'application/json' };
     if (token) {
       header['Authorization'] = 'Bearer ' + token;
     }
@@ -41,7 +49,8 @@ function request(method, path, data) {
       method: method,
       header: header,
       data: method !== 'GET' ? data : undefined,
-      success(res) {
+      success: function (res) {
+        console.log('[api] ' + method + ' ' + path + ' →', res.statusCode);
         if (res.statusCode === 401) {
           clearToken();
           wx.showToast({ title: '登录已过期，请重新进入', icon: 'none' });
@@ -51,11 +60,26 @@ function request(method, path, data) {
         if (res.data && res.data.code === 0) {
           resolve(res.data.data);
         } else {
-          reject(new Error(res.data?.msg || '请求失败'));
+          var msg = (res.data && res.data.msg) ? res.data.msg : '请求失败';
+          console.error('[api] 业务错误:', msg, res.data);
+          wx.showToast({ title: msg, icon: 'none' });
+          reject(new Error(msg));
         }
       },
-      fail(err) {
-        wx.showToast({ title: '网络错误', icon: 'none' });
+      fail: function (err) {
+        console.error('[api] callContainer 失败:', JSON.stringify(err));
+        var hint = '网络错误';
+        if (err && err.errMsg) {
+          // 常见错误映射
+          if (err.errMsg.indexOf('not found') > -1) {
+            hint = '服务未找到，检查服务名';
+          } else if (err.errMsg.indexOf('env') > -1) {
+            hint = '环境ID不正确';
+          } else if (err.errMsg.indexOf('NOT_ALLOW') > -1 || err.errMsg.indexOf('unauthorized') > -1) {
+            hint = '小程序未授权此云环境';
+          }
+        }
+        wx.showToast({ title: hint, icon: 'none' });
         reject(err);
       }
     });

@@ -5,6 +5,7 @@
     "minified": true,
     "uglifyFileName": false,
     "enhance": true,
+    "cloud": true,
     "packNpmRelationList": [],
     "babelSetting": {
       "ignore": [],
