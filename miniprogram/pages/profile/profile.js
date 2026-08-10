@@ -23,6 +23,7 @@ Page({
     loading: true,
     editingSection: null,
     editForm: {},
+    bioCount: 0,
     skillLevelOptions: SKILL_LEVELS,
     playFrequencyOptions: PLAY_FREQUENCY,
     playYearsOptions: PLAY_YEARS,
@@ -59,6 +60,7 @@ Page({
       profile.playFrequencyLabel = this.getLabel(PLAY_FREQUENCY, profile.playFrequency);
       profile.playYearsLabel = this.getLabel(PLAY_YEARS, profile.playYears);
       profile.playStyleLabel = this.getLabel(PLAY_STYLES, profile.playStyle);
+      profile.stringTensionDisplay = profile.stringTension ? profile.stringTension + '磅' : '';
 
       this.setData({
         profile: profile,
@@ -95,6 +97,8 @@ Page({
       form.nickName = profile.nickName || '';
       form.bio = profile.bio || '';
       form.avatarUrl = profile.avatarUrl || '';
+      this.setData({ editingSection: section, editForm: form, bioCount: (form.bio || '').length });
+      return;
     } else {
       var fields = SECTION_FIELDS[section];
       fields.forEach(function (f) { form[f] = profile[f]; });
@@ -145,7 +149,11 @@ Page({
     if (field === 'stringTension') {
       value = parseInt(value) || 0;
     }
-    this.setData({ ['editForm.' + field]: value });
+    var update = { ['editForm.' + field]: value };
+    if (field === 'bio') {
+      update.bioCount = (value || '').length;
+    }
+    this.setData(update);
   },
 
   onPickerChange: function (e) {
@@ -188,7 +196,8 @@ Page({
         if (updated[f] !== undefined) profile[f] = updated[f];
       });
 
-      // 处理 picker label 字段
+      // 处理 picker label 字段 + 衍生显示字段
+      profile.stringTensionDisplay = profile.stringTension ? profile.stringTension + '磅' : '';
       if (section === 'skill') {
         ['skillLevel', 'playYears', 'playFrequency', 'playStyle'].forEach(function (k) {
           var cfg = PICKER_CONFIG[k];

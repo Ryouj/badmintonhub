@@ -34,7 +34,7 @@
       <view class="be-row">
         <text class="be-label">简介</text>
         <textarea class="be-textarea" value="{{editForm.bio}}" bindinput="onFieldChange" data-field="bio" placeholder="介绍一下自己..." auto-height maxlength="80" />
-        <text class="be-counter">{{(editForm.bio || '').length}}/80</text>
+        <text class="be-counter">{{bioCount}}/80</text>
       </view>
       <view class="be-actions">
         <text class="be-cancel" bindtap="cancelEdit">取消</text>
@@ -184,7 +184,7 @@
         </view>
         <view class="ig-item">
           <text class="ig-label">拉线磅数</text>
-          <text class="ig-value {{profile.stringTension ? '' : 'empty'}}">{{profile.stringTension ? profile.stringTension + '磅' : '待填写'}}</text>
+          <text class="ig-value {{profile.stringTension ? '' : 'empty'}}">{{profile.stringTensionDisplay || '待填写'}}</text>
         </view>
       </view>
     </view>
