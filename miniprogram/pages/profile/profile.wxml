@@ -82,11 +82,11 @@
       <view class="card-head">
         <text class="card-icon">🏅</text>
         <text class="card-title">技术水平</text>
-        <text class="card-toggle {{editingSection === 'skill' ? 'active' : ''}}"
+        <view class="card-toggle {{editingSection === 'skill' ? 'active' : ''}}"
               bindtap="{{editingSection === 'skill' ? 'saveSection' : 'toggleEdit'}}"
               data-section="skill">
           {{editingSection === 'skill' ? '完成' : (hasSkill ? '编辑' : '添加')}}
-        </text>
+        </view>
       </view>
 
       <view class="edit-panel {{editingSection === 'skill' ? 'show' : ''}}">
@@ -142,11 +142,11 @@
       <view class="card-head">
         <text class="card-icon">🎯</text>
         <text class="card-title">常用装备</text>
-        <text class="card-toggle {{editingSection === 'equipment' ? 'active' : ''}}"
+        <view class="card-toggle {{editingSection === 'equipment' ? 'active' : ''}}"
               bindtap="{{editingSection === 'equipment' ? 'saveSection' : 'toggleEdit'}}"
               data-section="equipment">
           {{editingSection === 'equipment' ? '完成' : (hasEquip ? '编辑' : '添加')}}
-        </text>
+        </view>
       </view>
 
       <view class="edit-panel {{editingSection === 'equipment' ? 'show' : ''}}">
@@ -202,11 +202,11 @@
       <view class="card-head">
         <text class="card-icon">📍</text>
         <text class="card-title">打球偏好</text>
-        <text class="card-toggle {{editingSection === 'preference' ? 'active' : ''}}"
+        <view class="card-toggle {{editingSection === 'preference' ? 'active' : ''}}"
               bindtap="{{editingSection === 'preference' ? 'saveSection' : 'toggleEdit'}}"
               data-section="preference">
           {{editingSection === 'preference' ? '完成' : (hasPref ? '编辑' : '添加')}}
-        </text>
+        </view>
       </view>
 
       <view class="edit-panel {{editingSection === 'preference' ? 'show' : ''}}">

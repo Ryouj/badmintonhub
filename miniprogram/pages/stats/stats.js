@@ -32,12 +32,12 @@ Page({
         summary: {
           totalAmount: (data.totalAmount || 0).toFixed(2),
           totalDuration: Math.round((data.totalDuration || 0) * 10) / 10,
-          totalCount: data.totalCount || 0,
-          avgPerTime: data.totalCount > 0 ? (data.totalAmount / data.totalCount).toFixed(2) : '0.00',
+          totalCount: data.activityCount || 0,
+          avgPerTime: data.activityCount > 0 ? (data.totalAmount / data.activityCount).toFixed(2) : '0.00',
           avgDuration: data.activityCount > 0 ? Math.round(data.totalDuration * 60 / data.activityCount) : 0,
           maxDuration: data.maxDuration || 0
         },
-        isEmpty: !data.totalAmount && !data.totalCount && !data.activityCount,
+        isEmpty: !data.totalAmount && !data.activityCount,
         categoryStats,
         monthlyTrend,
         topVenues
