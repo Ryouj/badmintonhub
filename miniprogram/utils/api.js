@@ -113,10 +113,21 @@ function del(path) {
 
 // === 业务 API ===
 
-// 微信登录（头像昵称由用户主动设置，不在登录时获取）
-async function login() {
-  var res = await wx.login();
-  return request('POST', '/api/login', { code: res.code });
+// 微信登录：profile.code 可外部传入，否则内部 wx.login 获取
+async function login(profile) {
+  var code;
+  if (profile && profile.code) {
+    code = profile.code;
+  } else {
+    var res = await wx.login();
+    code = res.code;
+  }
+  var payload = { code: code };
+  if (profile) {
+    if (profile.nickName) payload.nickName = profile.nickName;
+    if (profile.avatarUrl) payload.avatarUrl = profile.avatarUrl;
+  }
+  return request('POST', '/api/login', payload);
 }
 
 // 用户

@@ -5,7 +5,7 @@
   <view class="header-card">
     <view class="hc-top">
       <view class="hc-avatar-wrap">
-        <image class="hc-avatar" src="{{profile.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <image class="hc-avatar" src="{{profile.avatarUrl || '/images/default-avatar.svg'}}" mode="aspectFill" />
         <view class="hc-level level-{{profile.skillLevel}}" wx:if="{{profile.skillLevelLabel}}">
           {{profile.skillLevelLabel}}
         </view>
@@ -21,7 +21,7 @@
     <view wx:if="{{editingSection === 'basic'}}" class="basic-edit">
       <view class="be-avatar-row">
         <button class="be-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-          <image class="be-avatar-preview" src="{{editForm.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <image class="be-avatar-preview" src="{{editForm.avatarUrl || '/images/default-avatar.svg'}}" mode="aspectFill" />
           <text class="be-avatar-hint">点击更换头像</text>
         </button>
       </view>

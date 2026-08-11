@@ -3,30 +3,6 @@
   padding-bottom: 30rpx;
 }
 
-/* 首次设置引导 */
-.setup-banner {
-  display: flex; align-items: center; justify-content: space-between;
-  margin: 20rpx 20rpx 0;
-  padding: 24rpx 24rpx;
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-  border-radius: 16rpx;
-  border: 2rpx solid #a5d6a7;
-}
-.setup-banner-left {
-  display: flex; align-items: center; gap: 16rpx;
-}
-.setup-icon { font-size: 48rpx; }
-.setup-text { display: flex; flex-direction: column; }
-.setup-title {
-  font-size: 28rpx; font-weight: 600; color: #2e7d32;
-}
-.setup-desc {
-  font-size: 22rpx; color: #558b2f; margin-top: 4rpx;
-}
-.setup-arrow {
-  font-size: 40rpx; color: #66bb6a; font-weight: 300;
-}
-
 /* 头部卡片 */
 .header-card {
   background: linear-gradient(135deg, #1aad19, #0d8a0d);

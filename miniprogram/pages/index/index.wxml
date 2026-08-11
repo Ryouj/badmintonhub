@@ -1,17 +1,5 @@
 <!-- pages/index/index.wxml - 首页 -->
 <view class="page">
-  <!-- 首次设置引导 -->
-  <view class="setup-banner" wx:if="{{showSetup}}" bindtap="goProfile">
-    <view class="setup-banner-left">
-      <text class="setup-icon">👋</text>
-      <view class="setup-text">
-        <text class="setup-title">欢迎加入羽球集！</text>
-        <text class="setup-desc">点击设置微信头像和昵称，完善你的个人档案</text>
-      </view>
-    </view>
-    <text class="setup-arrow">›</text>
-  </view>
-
   <!-- 顶部摘要卡片 -->
   <view class="header-card">
     <view class="header-top">
@@ -20,7 +8,7 @@
         <text class="greeting-sub">记录每一拍的热爱</text>
       </view>
       <view class="header-avatar" bindtap="goProfile">
-        <image src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <image src="{{userInfo.avatarUrl || '/images/default-avatar.svg'}}" mode="aspectFill" />
       </view>
     </view>
     
