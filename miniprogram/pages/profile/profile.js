@@ -237,7 +237,10 @@ Page({
 
     var payload = {};
     fields.forEach(function (f) {
-      if (form[f] !== undefined && form[f] !== '') payload[f] = form[f];
+      if (form[f] !== undefined && form[f] !== '') {
+        // stringTension 后端是 int 类型，picker 存的是字符串 key，需转数字
+        payload[f] = (f === 'stringTension') ? parseInt(form[f], 10) || 0 : form[f];
+      }
     });
 
     wx.showLoading({ title: '保存中...' });
