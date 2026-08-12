@@ -59,6 +59,5 @@
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents",
-  "requiredPrivateInfos": ["chooseAvatar"]
+  "lazyCodeLoading": "requiredComponents"
 }
