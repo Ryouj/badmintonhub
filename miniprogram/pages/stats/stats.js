@@ -170,5 +170,18 @@ Page({
       ctx.setStrokeStyle('#ccc'); ctx.setLineWidth(1); ctx.stroke();
       ctx.draw();
     }).exec();
+  },
+
+  // 转发给朋友
+  onShareAppMessage() {
+    return {
+      title: '我的羽毛球数据 — 累计消费/时长/场次',
+      path: '/pages/stats/stats'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return { title: '我的羽毛球数据 — 累计消费/时长/场次' };
   }
 });

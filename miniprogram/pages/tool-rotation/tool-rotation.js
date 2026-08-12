@@ -257,5 +257,18 @@ Page({
       }
       wx.setClipboardData({ data: text, success: () => wx.showToast({ title: '已复制战报', icon: 'none' }) });
     }
+  },
+
+  // 转发给朋友
+  onShareAppMessage() {
+    return {
+      title: '八人转排班 — 实战轮转排阵神器',
+      path: '/pages/tool-rotation/tool-rotation'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return { title: '八人转排班 — 实战轮转排阵神器' };
   }
 });

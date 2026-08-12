@@ -118,5 +118,18 @@ Page({
         }
       }
     });
+  },
+
+  // 转发给朋友
+  onShareAppMessage() {
+    return {
+      title: '羽球集 — 我的羽毛球账单',
+      path: '/pages/bills/bills'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return { title: '羽球集 — 我的羽毛球账单' };
   }
 });

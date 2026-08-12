@@ -11,13 +11,24 @@ const BILL_CATEGORIES = [
   { key: 'other',     label: '其他',   icon: '📋', color: '#7f8c8d' }
 ];
 
-// 技术水平等级
+// 技术水平等级 L1-L10，1-6级含 .5 档（key 用连字符避免 CSS 类名非法）
 const SKILL_LEVELS = [
-  { key: 'beginner',     label: '新手',   desc: '刚开始接触羽毛球' },
-  { key: 'elementary',   label: '初级',   desc: '掌握基本动作，能进行简单对打' },
-  { key: 'intermediate', label: '中级',   desc: '掌握各项技术，有比赛经验' },
-  { key: 'advanced',     label: '高级',   desc: '技术全面，经常参加比赛' },
-  { key: 'expert',       label: '专业',   desc: '具有专业训练背景' }
+  { key: 'L1',   label: 'L1',   desc: '刚入门，能打几拍' },
+  { key: 'L1-5', label: 'L1.5', desc: '入门稳定' },
+  { key: 'L2',   label: 'L2',   desc: '基本动作正确' },
+  { key: 'L2-5', label: 'L2.5', desc: '能简单对打' },
+  { key: 'L3',   label: 'L3',   desc: '初中级，技术较稳' },
+  { key: 'L3-5', label: 'L3.5', desc: '初中级偏上' },
+  { key: 'L4',   label: 'L4',   desc: '中级，各项技术掌握' },
+  { key: 'L4-5', label: 'L4.5', desc: '中级偏上' },
+  { key: 'L5',   label: 'L5',   desc: '中高级' },
+  { key: 'L5-5', label: 'L5.5', desc: '中高级偏上' },
+  { key: 'L6',   label: 'L6',   desc: '高级' },
+  { key: 'L6-5', label: 'L6.5', desc: '高级偏上' },
+  { key: 'L7',   label: 'L7',   desc: '准专业' },
+  { key: 'L8',   label: 'L8',   desc: '专业级' },
+  { key: 'L9',   label: 'L9',   desc: '职业级' },
+  { key: 'L10',  label: 'L10',  desc: '顶尖职业' }
 ];
 
 // 打球频率选项
@@ -32,11 +43,13 @@ const PLAY_FREQUENCY = [
 
 // 打球年限选项
 const PLAY_YEARS = [
-  { key: '0-1', label: '不到1年' },
-  { key: '1-3', label: '1-3年' },
-  { key: '3-5', label: '3-5年' },
-  { key: '5-10',label: '5-10年' },
-  { key: '10+', label: '10年以上' }
+  { key: '0-1',  label: '不到1年' },
+  { key: '1-3',  label: '1-3年' },
+  { key: '3-5',  label: '3-5年' },
+  { key: '5-10', label: '5-10年' },
+  { key: '10-15',label: '10-15年' },
+  { key: '15-20',label: '15-20年' },
+  { key: '20+',  label: '20年以上' }
 ];
 
 // 打球类型

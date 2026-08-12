@@ -361,5 +361,18 @@ Page({
       data: text,
       success: function () { wx.showToast({ title: '已复制，去群里贴', icon: 'none' }); }
     });
+  },
+
+  // 转发给朋友
+  onShareAppMessage() {
+    return {
+      title: '球费计算器 — 场地球费一键算，8种分摊方案',
+      path: '/pages/tool-fee/tool-fee'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return { title: '球费计算器 — 场地球费一键算，8种分摊方案' };
   }
 });

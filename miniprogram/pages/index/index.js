@@ -89,5 +89,18 @@ Page({
   goBillDetail(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: '/pages/bill-detail/bill-detail?id=' + id });
+  },
+
+  // 转发给朋友
+  onShareAppMessage() {
+    return {
+      title: '羽球集 — 羽毛球记账+球费计算神器',
+      path: '/pages/index/index'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return { title: '羽球集 — 羽毛球记账+球费计算神器' };
   }
 });

@@ -32,11 +32,22 @@
   padding: 2rpx 14rpx; border-radius: 16rpx;
   font-size: 20rpx; color: #fff; font-weight: 600;
 }
-.level-beginner     { background: #95a5a6; }
-.level-elementary   { background: #3498db; }
-.level-intermediate { background: #f39c12; }
-.level-advanced     { background: #e74c3c; }
-.level-expert       { background: #9b59b6; }
+.level-L1   { background: #95a5a6; }
+.level-L1-5 { background: #8aa39b; }
+.level-L2   { background: #6aa84f; }
+.level-L2-5 { background: #4f9d4f; }
+.level-L3   { background: #1aad19; }
+.level-L3-5 { background: #2ecc71; }
+.level-L4   { background: #3498db; }
+.level-L4-5 { background: #2980b9; }
+.level-L5   { background: #f1c40f; }
+.level-L5-5 { background: #f39c12; }
+.level-L6   { background: #e67e22; }
+.level-L6-5 { background: #e74c3c; }
+.level-L7   { background: #c0392b; }
+.level-L8   { background: #9b59b6; }
+.level-L9   { background: #8e44ad; }
+.level-L10  { background: #2c3e50; }
 
 .hc-info {
   flex: 1; margin-left: 24rpx; padding-top: 6rpx;
@@ -192,12 +203,20 @@
 }
 .card-toggle {
   font-size: 24rpx; color: #1aad19;
-  padding: 4rpx 20rpx; border-radius: 16rpx;
-  border: 2rpx solid #1aad19;
+  padding: 6rpx 22rpx; border-radius: 28rpx;
+  background: #e8f8e8;
+  font-weight: 600;
   transition: all 0.2s;
+  display: inline-flex; align-items: center; justify-content: center;
+  line-height: 1; height: 44rpx;
 }
 .card-toggle.active {
   background: #1aad19; color: #fff;
+  box-shadow: 0 4rpx 12rpx rgba(26,173,25,0.3);
+}
+.card-toggle:active {
+  transform: scale(0.95);
+  opacity: 0.85;
 }
 
 /* ==================== 编辑面板（带动画） ==================== */
@@ -254,6 +273,18 @@
 
 /* 空状态提示 */
 .empty-hint {
-  font-size: 24rpx; color: #ccc;
-  text-align: center; padding: 16rpx 0 8rpx;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8rpx;
+  font-size: 24rpx; color: #1aad19;
+  text-align: center; padding: 20rpx 0 12rpx;
+  font-weight: 500;
+}
+.empty-hint::before {
+  content: "+";
+  font-size: 28rpx; font-weight: 700;
+  width: 36rpx; height: 36rpx; line-height: 36rpx;
+  text-align: center; border-radius: 50%;
+  color: #fff; background: #1aad19;
+  display: inline-block; flex-shrink: 0;
+  box-shadow: 0 2rpx 8rpx rgba(26,173,25,0.25);
 }
