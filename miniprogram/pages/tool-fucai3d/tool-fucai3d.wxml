@@ -1,0 +1,120 @@
+<!-- pages/tool-fucai3d/tool-fucai3d.wxml -->
+<view class="page">
+  <view class="page-header">
+    <text class="page-title">🎰 福彩3D 选号助手</text>
+    <text class="page-sub">本地统计生成 · 仅供娱乐参考</text>
+  </view>
+
+  <view class="disclaimer">
+    <text class="disclaimer-text">⚠️ 本工具基于历史开奖统计随机生成号码，不保证中奖，请理性购彩、量力而行。</text>
+  </view>
+
+  <button class="gen-btn" bindtap="onGenerate" hover-class="gen-btn-hover">🎲 生成号码</button>
+
+  <!-- 结果区 -->
+  <block wx:if="{{result}}">
+    <!-- 推荐号码 -->
+    <view class="card">
+      <view class="card-title">💡 推荐号码 <text class="card-hint">含单胆 {{result.dan.single}}</text></view>
+      <view class="rec-grid">
+        <view class="rec-item {{item.hasDoubleDan ? 'rec-double' : ''}}" wx:for="{{result.recommendations}}" wx:key="number">
+          <text class="rec-num">{{item.number}}</text>
+          <text class="rec-reason">{{item.reason}}</text>
+          <text class="rec-tag" wx:if="{{item.hasDoubleDan}}">双胆</text>
+          <text class="rec-tag rec-tag-dan" wx:elif="{{item.hasDan}}">胆</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 胆码 / 杀号 -->
+    <view class="card">
+      <view class="card-title">🎯 胆码与杀号</view>
+      <view class="row-2">
+        <view class="mini-block">
+          <text class="mini-label">单胆</text>
+          <text class="mini-value dan">{{result.dan.single}}</text>
+        </view>
+        <view class="mini-block">
+          <text class="mini-label">双胆</text>
+          <text class="mini-value dan">{{result.dan.double[0]}} {{result.dan.double[1]}}</text>
+        </view>
+      </view>
+      <view class="row-2">
+        <view class="mini-block">
+          <text class="mini-label">备选胆</text>
+          <text class="mini-value">{{result.dan.backup[0]}} {{result.dan.backup[1]}} {{result.dan.backup[2]}}</text>
+        </view>
+        <view class="mini-block">
+          <text class="mini-label">杀号(百/十/个)</text>
+          <text class="mini-value kill">{{result.killNumbers.hundred[0]}}{{result.killNumbers.hundred[1]}} / {{result.killNumbers.ten[0]}}{{result.killNumbers.ten[1]}} / {{result.killNumbers.unit[0]}}{{result.killNumbers.unit[1]}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 和值 / 跨度 / 组选 -->
+    <view class="card">
+      <view class="card-title">📊 走势参考</view>
+      <view class="row-3">
+        <view class="mini-block">
+          <text class="mini-label">和值</text>
+          <text class="mini-value">{{result.sum.avg}} <text class="mini-sub">({{result.sum.trend}})</text></text>
+          <text class="mini-sub">区间 {{result.sum.range[0]}}~{{result.sum.range[1]}}</text>
+        </view>
+        <view class="mini-block">
+          <text class="mini-label">跨度</text>
+          <text class="mini-value">{{result.span.avg}}</text>
+          <text class="mini-sub">推荐 {{result.span.recommended[0]}}/{{result.span.recommended[1]}}/{{result.span.recommended[2]}}</text>
+        </view>
+        <view class="mini-block">
+          <text class="mini-label">组选</text>
+          <text class="mini-value">{{result.combo}}</text>
+        </view>
+      </view>
+      <view class="row-2" style="margin-top: 16rpx;">
+        <view class="mini-block">
+          <text class="mini-label">大小</text>
+          <text class="mini-value">{{result.size.trend}} <text class="mini-sub">{{result.size.bigRatio}}%</text></text>
+        </view>
+        <view class="mini-block">
+          <text class="mini-label">奇偶</text>
+          <text class="mini-value">{{result.parity.trend}} <text class="mini-sub">{{result.parity.oddRatio}}%</text></text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 热号 -->
+    <view class="card">
+      <view class="card-title">🔥 近期热号 <text class="card-hint">百/十/个 出现频繁</text></view>
+      <view class="row-3">
+        <view class="mini-block">
+          <text class="mini-label">百位</text>
+          <text class="mini-value">{{result.hot.hundred[0]}} {{result.hot.hundred[1]}} {{result.hot.hundred[2]}}</text>
+        </view>
+        <view class="mini-block">
+          <text class="mini-label">十位</text>
+          <text class="mini-value">{{result.hot.ten[0]}} {{result.hot.ten[1]}} {{result.hot.ten[2]}}</text>
+        </view>
+        <view class="mini-block">
+          <text class="mini-label">个位</text>
+          <text class="mini-value">{{result.hot.unit[0]}} {{result.hot.unit[1]}} {{result.hot.unit[2]}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 近期开奖 -->
+  <view class="card">
+    <view class="card-title">📜 近期开奖 <text class="card-hint">最近10期</text></view>
+    <view class="recent-row" wx:for="{{recent}}" wx:key="i">
+      <text class="recent-issue">{{item.i}}</text>
+      <text class="recent-date">{{item.d}}</text>
+      <view class="recent-nums">
+        <text class="recent-num" wx:for="{{item.n}}" wx:for-item="d" wx:key="*this">{{d}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tool-tip">
+    <text>💡 数据为本地静态种子（截至 2026-06-15），下次开奖后不会自动更新</text>
+  </view>
+</view>

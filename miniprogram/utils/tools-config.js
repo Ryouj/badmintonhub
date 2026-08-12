@@ -18,6 +18,14 @@ const TOOLS = [
     color: '#3498db',
     page: '/pages/tool-rotation/tool-rotation',
     badge: '新'
+  },
+  {
+    key: 'fucai3d',
+    title: '福彩3D 选号',
+    icon: '🎰',
+    desc: '本地统计生成推荐号码，含胆码杀号',
+    color: '#e74c3c',
+    page: '/pages/tool-fucai3d/tool-fucai3d'
   }
   // 新增工具在此追加：{ key, title, icon, desc, color, page }
 ];

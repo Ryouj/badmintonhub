@@ -14,13 +14,13 @@ Page({
   // 转发给朋友
   onShareAppMessage() {
     return {
-      title: '羽球集工具箱 — 球费计算/八人转排班',
+      title: '羽球集工具箱 — 球费计算/八人转排班/福彩3D选号',
       path: '/pages/tools/tools'
     };
   },
 
   // 分享到朋友圈
   onShareTimeline() {
-    return { title: '羽球集工具箱 — 球费计算/八人转排班' };
+    return { title: '羽球集工具箱 — 球费计算/八人转排班/福彩3D选号' };
   }
 });

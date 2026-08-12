@@ -11,6 +11,7 @@
     "pages/tools/tools",
     "pages/tool-fee/tool-fee",
     "pages/tool-rotation/tool-rotation",
+    "pages/tool-fucai3d/tool-fucai3d",
     "pages/profile/profile"
   ],
   "window": {
