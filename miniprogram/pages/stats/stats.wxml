@@ -1,5 +1,6 @@
 <!-- pages/stats/stats.wxml - 统计汇总 -->
 <view class="page">
+  <block wx:if="{{!loggedOut}}">
   <!-- 时间范围切换 -->
   <view class="period-tabs">
     <view class="tab {{period === 'week' ? 'active' : ''}}" bindtap="switchPeriod" data-period="week">本周</view>
@@ -90,4 +91,13 @@
     </view>
   </view>
 </block>
+  </block>
+
+  <!-- 未登录浏览态 -->
+  <view wx:else class="loggedout">
+    <view class="lo-icon">📊</view>
+    <view class="lo-title">未登录</view>
+    <view class="lo-desc">登录后查看你的羽毛球数据统计</view>
+    <view class="lo-btn" bindtap="goLogin">登录 / 注册</view>
+  </view>
 </view>

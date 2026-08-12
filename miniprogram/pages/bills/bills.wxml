@@ -1,5 +1,6 @@
 <!-- pages/bills/bills.wxml - 账单列表（多项目模式） -->
 <view class="page">
+  <block wx:if="{{!loggedOut}}">
   <!-- 筛选栏 -->
   <view class="filter-bar">
     <picker mode="date" fields="month" value="{{filterMonth}}" bindchange="onMonthChange">
@@ -43,6 +44,15 @@
   <view class="empty-state" wx:else>
     <text>📝</text>
     <text>还没有账单记录</text>
+  </view>
+  </block>
+
+  <!-- 未登录浏览态 -->
+  <view wx:else class="loggedout">
+    <view class="lo-icon">📝</view>
+    <view class="lo-title">未登录</view>
+    <view class="lo-desc">登录后查看你的账单记录</view>
+    <view class="lo-btn" bindtap="goLogin">登录 / 注册</view>
   </view>
 
   <!-- 悬浮添加按钮 -->

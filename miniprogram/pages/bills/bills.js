@@ -7,6 +7,7 @@ Page({
   data: {
     bills: [],
     groupedBills: [],
+    loggedOut: false,
     filterMonth: '',
     filterMonthText: '',
     totalCount: 0,
@@ -35,6 +36,15 @@ Page({
   },
 
   async loadBills() {
+    var app = getApp();
+    var loggedIn = await app.ensureLogin();
+    if (!loggedIn) {
+      // 未登录：展示浏览态，不强制跳转
+      this.setData({ loggedOut: true });
+      return;
+    }
+    this.setData({ loggedOut: false });
+
     wx.showLoading({ title: '加载中...' });
     try {
       const data = await api.billAPI.list({ month: this.data.filterMonth });
@@ -91,7 +101,12 @@ Page({
     return cat ? cat.label : '其他';
   },
 
-  goAdd() { wx.navigateTo({ url: '/pages/bill-add/bill-add' }); },
+  goAdd() {
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
+    wx.navigateTo({ url: '/pages/bill-add/bill-add' });
+  },
+
+  goLogin() { getApp().goLogin(); },
 
   goDetail(e) {
     wx.navigateTo({ url: '/pages/bill-detail/bill-detail?id=' + e.currentTarget.dataset.id });

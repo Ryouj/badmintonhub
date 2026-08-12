@@ -42,6 +42,7 @@ Page({
   data: {
     profile: {},
     totalData: {},
+    loggedOut: false,
     loading: true,
     editingSection: null,
     editForm: {},
@@ -74,10 +75,21 @@ Page({
     });
   },
 
+  // 未登录时前往登录页
+  goLogin() {
+    getApp().goLogin();
+  },
+
   async loadProfile() {
-    this.setData({ loading: true });
+    this.setData({ loading: false });
     var app = getApp();
-    await app.ensureLogin();
+    var loggedIn = await app.ensureLogin();
+    if (!loggedIn) {
+      // 未登录：展示浏览态，不强制跳转
+      this.setData({ loggedOut: true });
+      return;
+    }
+    this.setData({ loggedOut: false, loading: true });
 
     try {
       var results = await Promise.all([

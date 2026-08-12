@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/login/login",
     "pages/index/index",
+    "pages/login/login",
     "pages/activity/activity",
     "pages/activity-list/activity-list",
     "pages/bills/bills",
@@ -12,7 +12,8 @@
     "pages/tool-fee/tool-fee",
     "pages/tool-rotation/tool-rotation",
     "pages/tool-fucai3d/tool-fucai3d",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/agreement/agreement"
   ],
   "window": {
     "navigationBarBackgroundColor": "#1aad19",

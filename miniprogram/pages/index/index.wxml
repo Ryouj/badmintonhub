@@ -1,5 +1,11 @@
 <!-- pages/index/index.wxml - 首页 -->
 <view class="page">
+  <!-- 未登录浏览提示（不强制，用户可自主选择登录） -->
+  <view wx:if="{{loggedOut}}" class="login-banner">
+    <view class="lb-text">登录后开启记账、统计与个人资料功能</view>
+    <view class="lb-btn" bindtap="goLogin">登录 / 注册</view>
+  </view>
+
   <!-- 顶部摘要卡片 -->
   <view class="header-card">
     <view class="header-top">
@@ -73,9 +79,13 @@
       </view>
     </block>
     
-    <view class="empty-state" wx:else>
+    <view class="empty-state" wx:elif="{{!loggedOut}}">
       <text>🏸</text>
       <text>还没有记录，快去记一笔吧</text>
+    </view>
+    <view class="empty-state" wx:else>
+      <text>🔒</text>
+      <text>登录后查看你的记录</text>
     </view>
   </view>
 
@@ -99,9 +109,13 @@
       </view>
     </block>
     
-    <view class="empty-state" wx:else>
+    <view class="empty-state" wx:elif="{{!loggedOut}}">
       <text>📅</text>
       <text>还没有活动记录</text>
+    </view>
+    <view class="empty-state" wx:else>
+      <text>🔒</text>
+      <text>登录后查看你的活动</text>
     </view>
   </view>
 </view>

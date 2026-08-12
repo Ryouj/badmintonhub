@@ -148,14 +148,41 @@
   margin-top: auto;
   padding-top: 40rpx;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
-.agreement text {
+.checkbox {
+  flex-shrink: 0;
+  width: 32rpx;
+  height: 32rpx;
+  border: 2rpx solid #bbb;
+  border-radius: 50%;
+  margin-right: 12rpx;
+  margin-top: 2rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.checkbox.checked {
+  background: #1aad19;
+  border-color: #1aad19;
+}
+
+.check-mark {
+  color: #fff;
   font-size: 22rpx;
-  color: #bbb;
+  line-height: 1;
+}
+
+.agreement-text {
+  flex: 1;
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.6;
 }
 
 .agreement-link {
-  color: #1aad19 !important;
+  color: #1aad19;
 }

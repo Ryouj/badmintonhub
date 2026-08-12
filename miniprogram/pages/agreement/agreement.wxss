@@ -1,0 +1,73 @@
+/* pages/agreement/agreement.wxss */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f5f5;
+  box-sizing: border-box;
+}
+
+.tabs {
+  display: flex;
+  background: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+}
+
+.tab.active {
+  color: #1aad19;
+  font-weight: 600;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: #1aad19;
+}
+
+.content {
+  flex: 1;
+  padding: 32rpx 40rpx 60rpx;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 28rpx;
+}
+
+.para {
+  font-size: 26rpx;
+  color: #444;
+  line-height: 1.9;
+  margin-bottom: 22rpx;
+  text-align: justify;
+}
+
+.num {
+  color: #1aad19;
+  font-weight: 600;
+}
+
+.footer {
+  margin-top: 40rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #bbb;
+}

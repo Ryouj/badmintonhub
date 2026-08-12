@@ -1,6 +1,17 @@
 <!-- pages/profile/profile.wxml - 极简可选版 -->
 <view class="page">
 
+  <!-- 未登录浏览态 -->
+  <view wx:if="{{loggedOut}}" class="loggedout">
+    <view class="lo-icon">👤</view>
+    <view class="lo-title">未登录</view>
+    <view class="lo-desc">登录后查看并编辑你的羽毛球档案</view>
+    <view class="lo-btn" bindtap="goLogin">登录 / 注册</view>
+  </view>
+
+  <!-- 已登录内容（未登录时整块隐藏） -->
+  <view wx:if="{{!loggedOut}}">
+
   <!-- === 头部大卡片 === -->
   <view class="header-card">
     <view class="hc-top">
@@ -255,5 +266,6 @@
       <view wx:else class="empty-hint" bindtap="toggleEdit" data-section="preference">点此添加</view>
     </view>
 
+  </view>
   </view>
 </view>

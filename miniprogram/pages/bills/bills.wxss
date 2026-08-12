@@ -1,6 +1,28 @@
 /* pages/bills/bills.wxss - 多项目账单列表 */
 .page { padding-bottom: 120rpx; }
 
+/* 未登录浏览态 */
+.loggedout {
+  margin: 160rpx 40rpx;
+  padding: 60rpx 40rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.05);
+}
+.lo-icon { font-size: 100rpx; margin-bottom: 20rpx; }
+.lo-title { font-size: 36rpx; font-weight: 700; color: #333; margin-bottom: 12rpx; }
+.lo-desc { font-size: 26rpx; color: #999; margin-bottom: 40rpx; }
+.lo-btn {
+  background: #1aad19;
+  color: #fff;
+  font-size: 30rpx;
+  padding: 20rpx 80rpx;
+  border-radius: 44rpx;
+}
+
 /* 筛选栏 */
 .filter-bar {
   display: flex;

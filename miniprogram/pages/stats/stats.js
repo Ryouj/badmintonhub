@@ -5,6 +5,7 @@ const { BILL_CATEGORIES } = require('../../utils/constants');
 Page({
   data: {
     period: 'month',
+    loggedOut: false,
     summary: {},
     categoryStats: [],
     monthlyTrend: [],
@@ -20,7 +21,18 @@ Page({
     this.loadStats();
   },
 
+  goLogin() { getApp().goLogin(); },
+
   async loadStats() {
+    var app = getApp();
+    var loggedIn = await app.ensureLogin();
+    if (!loggedIn) {
+      // 未登录：展示浏览态，不强制跳转
+      this.setData({ loggedOut: true });
+      return;
+    }
+    this.setData({ loggedOut: false });
+
     wx.showLoading({ title: '统计中...' });
     try {
       const data = await api.statsAPI.summary(this.data.period);

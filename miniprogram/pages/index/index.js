@@ -6,6 +6,7 @@ const { BILL_CATEGORIES } = require('../../utils/constants');
 Page({
   data: {
     userInfo: {},
+    loggedOut: false,
     monthStats: {
       totalAmount: '0.00',
       totalDuration: 0,
@@ -21,8 +22,14 @@ Page({
 
   async loadData() {
     var app = getApp();
-    await app.ensureLogin();
+    var loggedIn = await app.ensureLogin();
+    if (!loggedIn) {
+      // 未登录：不强制跳转，展示浏览态，由用户自主选择登录
+      this.setData({ loggedOut: true, loading: false });
+      return;
+    }
     this.setData({
+      loggedOut: false,
       userInfo: app.globalData.userInfo || {}
     });
     
@@ -81,12 +88,20 @@ Page({
   },
 
   goProfile() { wx.switchTab({ url: '/pages/profile/profile' }); },
-  goAddBill() { wx.navigateTo({ url: '/pages/bill-add/bill-add' }); },
-  goActivityList() { wx.navigateTo({ url: '/pages/activity-list/activity-list' }); },
+  goAddBill() {
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
+    wx.navigateTo({ url: '/pages/bill-add/bill-add' });
+  },
+  goActivityList() {
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
+    wx.navigateTo({ url: '/pages/activity-list/activity-list' });
+  },
   goStats() { wx.switchTab({ url: '/pages/stats/stats' }); },
   goTools() { wx.switchTab({ url: '/pages/tools/tools' }); },
   goBills() { wx.switchTab({ url: '/pages/bills/bills' }); },
+  goLogin() { getApp().goLogin(); },
   goBillDetail(e) {
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: '/pages/bill-detail/bill-detail?id=' + id });
   },
