@@ -24,25 +24,27 @@ Page({
     this.uploadAvatar(tempPath);
   },
 
-  // 上传头像到云存储，拿到 fileID 存起来
+  // 上传头像到云存储，返回 Promise<fileID>（cloud:// 开头）
   uploadAvatar(tempPath) {
     var that = this;
-    wx.showLoading({ title: '上传头像...' });
-    var cloudPath = 'avatars/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.png';
-    wx.cloud.uploadFile({
-      cloudPath: cloudPath,
-      filePath: tempPath,
-      success: function (res) {
-        that.setData({ avatarUrl: res.fileID });
-        wx.hideLoading();
-      },
-      fail: function (err) {
-        console.error('[login] 头像上传失败:', err);
-        wx.hideLoading();
-        wx.showToast({ title: '头像上传失败，可重试', icon: 'none' });
-        // 回退到临时路径，登录时仍发送（后端可能支持 base64 或忽略）
-        that.setData({ avatarUrl: tempPath });
-      }
+    return new Promise(function (resolve, reject) {
+      wx.showLoading({ title: '上传头像...' });
+      var cloudPath = 'avatars/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.png';
+      wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: tempPath,
+        success: function (res) {
+          that.setData({ avatarUrl: res.fileID });
+          wx.hideLoading();
+          resolve(res.fileID);
+        },
+        fail: function (err) {
+          console.error('[login] 头像上传失败:', err);
+          wx.hideLoading();
+          wx.showToast({ title: '头像上传失败，可重试', icon: 'none' });
+          reject(err);
+        }
+      });
     });
   },
 
@@ -63,6 +65,13 @@ Page({
 
     this.setData({ loading: true });
     try {
+      // 0. 头像若还是临时路径（选了但上传未完成/失败），先上传完成再登录
+      var avatarUrl = this.data.avatarUrl;
+      if (avatarUrl && avatarUrl.indexOf('cloud://') !== 0 && this.data.tempAvatar) {
+        avatarUrl = await this.uploadAvatar(this.data.tempAvatar);
+        this.setData({ avatarUrl: avatarUrl });
+      }
+
       // 1. wx.login 拿 code
       var loginRes = await wx.login();
 
@@ -70,13 +79,13 @@ Page({
       var data = await api.login({
         code: loginRes.code,
         nickName: nickName,
-        avatarUrl: this.data.avatarUrl
+        avatarUrl: avatarUrl
       });
 
       // 3. 存 token + 更新全局态
       if (data.token) api.saveToken(data.token);
       var app = getApp();
-      app.applyUser(data.user || { nickName: nickName, avatarUrl: this.data.avatarUrl });
+      app.applyUser(data.user || { nickName: nickName, avatarUrl: avatarUrl });
 
       wx.showToast({ title: '欢迎加入', icon: 'success' });
       setTimeout(function () {

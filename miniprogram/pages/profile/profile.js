@@ -162,22 +162,27 @@ Page({
     this.uploadAvatar(avatarUrl);
   },
 
+  // 上传头像到云存储，返回 Promise<fileID>（cloud:// 开头）
   uploadAvatar: function (tempPath) {
     var that = this;
-    wx.showLoading({ title: '上传头像...' });
-    var cloudPath = 'avatars/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.png';
-    wx.cloud.uploadFile({
-      cloudPath: cloudPath,
-      filePath: tempPath,
-      success: function (res) {
-        that.setData({ 'editForm.avatarUrl': res.fileID });
-        wx.hideLoading();
-      },
-      fail: function (err) {
-        console.error('头像上传失败:', err);
-        wx.hideLoading();
-        wx.showToast({ title: '头像上传失败', icon: 'none' });
-      }
+    return new Promise(function (resolve, reject) {
+      wx.showLoading({ title: '上传头像...' });
+      var cloudPath = 'avatars/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.png';
+      wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: tempPath,
+        success: function (res) {
+          that.setData({ 'editForm.avatarUrl': res.fileID });
+          wx.hideLoading();
+          resolve(res.fileID);
+        },
+        fail: function (err) {
+          console.error('头像上传失败:', err);
+          wx.hideLoading();
+          wx.showToast({ title: '头像上传失败', icon: 'none' });
+          reject(err);
+        }
+      });
     });
   },
 
@@ -216,6 +221,18 @@ Page({
     var that = this;
     var section = e.currentTarget.dataset.section;
     var form = this.data.editForm;
+
+    // 头像若还是临时路径（选了但上传未完成/失败），先上传完成再保存
+    if (form.avatarUrl && form.avatarUrl.indexOf('cloud://') !== 0) {
+      try {
+        var fileID = await this.uploadAvatar(form.avatarUrl);
+        form = Object.assign({}, form, { avatarUrl: fileID });
+        this.setData({ editForm: form });
+      } catch (err) {
+        return; // 上传失败，放弃保存（toast 已在 uploadAvatar 提示）
+      }
+    }
+
     var fields = SECTION_FIELDS[section];
 
     var payload = {};
