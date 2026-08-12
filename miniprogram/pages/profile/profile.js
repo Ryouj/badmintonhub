@@ -158,8 +158,8 @@ Page({
 
   onChooseAvatar: function (e) {
     var avatarUrl = e.detail.avatarUrl;
+    // 只存临时路径用于预览，上传由 saveSection 统一处理（避免重复上传竞态）
     this.setData({ 'editForm.avatarUrl': avatarUrl });
-    this.uploadAvatar(avatarUrl);
   },
 
   // 上传头像到云存储，返回 Promise<fileID>（cloud:// 开头）
@@ -235,11 +235,20 @@ Page({
 
     var fields = SECTION_FIELDS[section];
 
+    // 合并全量数据发送：当前编辑分区用新值，其他分区用现有 profile 值
+    // 防止后端全量 Updates 覆盖其他分区数据
+    var ALL_FIELDS = ['nickName', 'bio', 'avatarUrl', 'skillLevel', 'playYears', 'playFrequency', 'playStyle', 'mainRacket', 'shoes', 'shuttleBrand', 'stringTension', 'preferredVenue', 'city', 'playType', 'hand'];
+    var currentProfile = this.data.profile;
     var payload = {};
-    fields.forEach(function (f) {
-      if (form[f] !== undefined && form[f] !== '') {
-        // stringTension 后端是 int 类型，picker 存的是字符串 key，需转数字
-        payload[f] = (f === 'stringTension') ? parseInt(form[f], 10) || 0 : form[f];
+    ALL_FIELDS.forEach(function (f) {
+      var val;
+      if (fields.indexOf(f) >= 0) {
+        val = form[f];
+      } else {
+        val = currentProfile[f];
+      }
+      if (val !== undefined && val !== '') {
+        payload[f] = (f === 'stringTension') ? parseInt(val, 10) || 0 : val;
       }
     });
 
