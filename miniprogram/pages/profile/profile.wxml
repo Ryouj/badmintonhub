@@ -267,5 +267,7 @@
     </view>
 
   </view>
-  </view>
+
+  <!-- 隐私政策入口：自愿阅读，不强制勾选 -->
+  <navigator class="policy-link" url="/pages/agreement/agreement?type=privacy" hover-class="policy-link-hover">《用户协议与隐私政策》</navigator>
 </view>

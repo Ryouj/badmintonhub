@@ -6,7 +6,6 @@ Page({
     avatarUrl: '',      // 云存储 fileID（上传后）
     tempAvatar: '',     // 临时路径（上传前预览）
     nickName: '',
-    agree: false,       // 是否勾选同意协议，默认不勾选（不默认同意）
     loading: false
   },
 
@@ -16,17 +15,6 @@ Page({
     if (app.globalData.isLoggedIn && !app.globalData.needsSetup) {
       wx.switchTab({ url: '/pages/index/index' });
     }
-  },
-
-  // 勾选/取消《用户协议与隐私政策》
-  onToggleAgree() {
-    this.setData({ agree: !this.data.agree });
-  },
-
-  // 打开协议页（用户服务协议 / 隐私政策）
-  openAgreement(e) {
-    var type = e.currentTarget.dataset.type || 'service';
-    wx.navigateTo({ url: '/pages/agreement/agreement?type=' + type });
   },
 
   // 头像选择回调 — e.detail.avatarUrl 是临时路径
@@ -68,12 +56,6 @@ Page({
   // 登录：wx.login 获取 code → 连同头像、昵称发给后端
   async doLogin() {
     if (this.data.loading) return;
-
-    // 必须先阅读并勾选协议（不默认同意）
-    if (!this.data.agree) {
-      wx.showToast({ title: '请先阅读并同意用户协议与隐私政策', icon: 'none' });
-      return;
-    }
 
     var nickName = (this.data.nickName || '').trim();
 
@@ -120,12 +102,6 @@ Page({
   // 跳过：只 wx.login 获取 code，不带头像昵称
   async doSkip() {
     if (this.data.loading) return;
-
-    // 跳过也需先勾选协议（不默认同意）
-    if (!this.data.agree) {
-      wx.showToast({ title: '请先阅读并同意用户协议与隐私政策', icon: 'none' });
-      return;
-    }
 
     this.setData({ loading: true });
     try {

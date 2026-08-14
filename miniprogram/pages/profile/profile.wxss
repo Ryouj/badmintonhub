@@ -310,3 +310,16 @@
   display: inline-block; flex-shrink: 0;
   box-shadow: 0 2rpx 8rpx rgba(26,173,25,0.25);
 }
+
+/* 隐私政策入口（自愿阅读，非强制） */
+.policy-link {
+  display: block;
+  text-align: center;
+  font-size: 22rpx;
+  color: #999;
+  margin: 30rpx 0 10rpx;
+  text-decoration: underline;
+}
+.policy-link-hover {
+  color: #1aad19;
+}

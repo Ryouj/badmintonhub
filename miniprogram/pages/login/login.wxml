@@ -38,17 +38,4 @@
       <text>暂不设置，直接进入</text>
     </view>
   </view>
-
-  <!-- 协议提示 -->
-  <view class="agreement">
-    <view class="checkbox {{agree ? 'checked' : ''}}" catchtap="onToggleAgree">
-      <text wx:if="{{agree}}" class="check-mark">✓</text>
-    </view>
-    <view class="agreement-text">
-      <text>我已阅读并同意</text>
-      <text class="agreement-link" catchtap="openAgreement" data-type="service">《用户服务协议》</text>
-      <text>和</text>
-      <text class="agreement-link" catchtap="openAgreement" data-type="privacy">《隐私政策》</text>
-    </view>
-  </view>
 </view>
