@@ -102,7 +102,7 @@ Page({
   },
 
   goAdd() {
-    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); }
     wx.navigateTo({ url: '/pages/bill-add/bill-add' });
   },
 

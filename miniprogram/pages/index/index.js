@@ -89,11 +89,11 @@ Page({
 
   goProfile() { wx.switchTab({ url: '/pages/profile/profile' }); },
   goAddBill() {
-    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); }
     wx.navigateTo({ url: '/pages/bill-add/bill-add' });
   },
   goActivityList() {
-    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); }
     wx.navigateTo({ url: '/pages/activity-list/activity-list' });
   },
   goStats() { wx.switchTab({ url: '/pages/stats/stats' }); },
@@ -101,7 +101,7 @@ Page({
   goBills() { wx.switchTab({ url: '/pages/bills/bills' }); },
   goLogin() { getApp().goLogin(); },
   goBillDetail(e) {
-    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); return; }
+    if (!getApp().globalData.isLoggedIn) { getApp().goLogin(); }
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: '/pages/bill-detail/bill-detail?id=' + id });
   },
